@@ -1,39 +1,21 @@
-export interface Person {
-  id: string;
-  name: string;
-  photo_url: string;
-  mention_count: number;
-  first_mentioned_date: string;
-  description: string;
-}
+import { Person, Document, TimelineEvent, Flight } from "./types";
 
-export interface Document {
+export interface Video {
   id: string;
   title: string;
-  dataset_number: string;
+  description: string;
+  duration: string;
   release_date: string;
-  document_type: string;
-  thumbnail_url: string;
   source_url: string;
-  summary: string;
+  category: string;
   referenced_persons: string[];
 }
 
-export interface TimelineEvent {
-  id: string;
-  date: string;
-  event_title: string;
-  description: string;
-  associated_persons: string[];
-}
-
-export interface Flight {
-  id: string;
-  date: string;
-  origin: string;
-  destination: string;
-  document_reference: string;
-  passengers: string[];
+export interface PersonConnection {
+  person_id: string;
+  connected_to: string;
+  shared_documents: number;
+  relationship: string;
 }
 
 export const topPersons: Person[] = [
@@ -80,4 +62,27 @@ export const timelineEvents: TimelineEvent[] = [
   { id: "t8", date: "2024-01-03", event_title: "Document Release — Court Order", description: "Federal court orders release of sealed documents from civil case.", associated_persons: ["1", "2", "7"] },
 ];
 
-export const documentTypes = ["All", "Legal Filing", "Law Enforcement", "Flight Log", "Financial Record", "Witness Testimony", "Photo Evidence"];
+export const releasedVideos: Video[] = [
+  { id: "v1", title: "Surveillance Footage — Palm Beach Residence", description: "Security camera recordings from the Palm Beach property obtained during the 2005 investigation by Palm Beach PD.", duration: "12:34", release_date: "2024-01-18", source_url: "#", category: "Surveillance", referenced_persons: ["1", "4"] },
+  { id: "v2", title: "Deposition Video — Virginia Giuffre (2016)", description: "Video recording of sworn deposition testimony in the Giuffre v. Maxwell civil case.", duration: "2:15:08", release_date: "2024-01-14", source_url: "#", category: "Legal Proceeding", referenced_persons: ["7"] },
+  { id: "v3", title: "News Conference — SDNY Indictment (2019)", description: "Press conference announcing federal indictment by the Southern District of New York.", duration: "28:41", release_date: "2024-01-10", source_url: "#", category: "Press Conference", referenced_persons: ["1"] },
+  { id: "v4", title: "Courtroom Footage — Maxwell Trial Day 1", description: "Public courtroom video from the opening day of the Ghislaine Maxwell federal trial.", duration: "1:42:19", release_date: "2024-01-06", source_url: "#", category: "Legal Proceeding", referenced_persons: ["2"] },
+  { id: "v5", title: "FBI Evidence Presentation — Grand Jury", description: "Compilation of visual evidence presented during grand jury proceedings.", duration: "45:22", release_date: "2023-12-30", source_url: "#", category: "Evidence", referenced_persons: ["1", "2", "3"] },
+  { id: "v6", title: "Aerial Footage — Little St. James Island", description: "Drone and aerial footage of the private island property in the U.S. Virgin Islands.", duration: "8:17", release_date: "2023-12-25", source_url: "#", category: "Evidence", referenced_persons: ["1"] },
+  { id: "v7", title: "Interview Footage — Palm Beach Detective", description: "Recorded interview with lead detective from the Palm Beach Police Department investigation.", duration: "34:56", release_date: "2023-12-20", source_url: "#", category: "Interview", referenced_persons: ["1", "6"] },
+  { id: "v8", title: "Deposition Video — Ghislaine Maxwell (2016)", description: "Sealed video deposition released by federal court order from the civil defamation case.", duration: "3:08:44", release_date: "2023-12-15", source_url: "#", category: "Legal Proceeding", referenced_persons: ["2"] },
+];
+
+export const personConnections: PersonConnection[] = [
+  { person_id: "1", connected_to: "2", shared_documents: 847, relationship: "Associate" },
+  { person_id: "1", connected_to: "3", shared_documents: 312, relationship: "Associate" },
+  { person_id: "1", connected_to: "4", shared_documents: 567, relationship: "Employee" },
+  { person_id: "1", connected_to: "5", shared_documents: 234, relationship: "Referenced" },
+  { person_id: "1", connected_to: "6", shared_documents: 445, relationship: "Employee" },
+  { person_id: "2", connected_to: "3", shared_documents: 198, relationship: "Associate" },
+  { person_id: "2", connected_to: "7", shared_documents: 523, relationship: "Legal Dispute" },
+  { person_id: "4", connected_to: "6", shared_documents: 156, relationship: "Colleague" },
+  { person_id: "7", connected_to: "1", shared_documents: 412, relationship: "Plaintiff" },
+];
+
+export const documentTypes = ["All", "Legal Filing", "Law Enforcement", "Flight Log", "Financial Record", "Witness Testimony", "Photo Evidence", "Surveillance"];
