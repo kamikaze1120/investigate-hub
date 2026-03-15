@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Play, ExternalLink, Clock } from "lucide-react";
+import { Play, Clock } from "lucide-react";
 import { topPersons } from "@/data/mockData";
 
 interface VideoCardProps {
@@ -10,6 +10,7 @@ interface VideoCardProps {
   category: string;
   referenced_persons: string[];
   delay?: number;
+  onClick?: () => void;
 }
 
 const categoryColors: Record<string, string> = {
@@ -20,7 +21,7 @@ const categoryColors: Record<string, string> = {
   "Interview": "bg-emerald-500/20 text-emerald-400",
 };
 
-const VideoCard = ({ title, description, duration, release_date, category, referenced_persons, delay = 0 }: VideoCardProps) => {
+const VideoCard = ({ title, description, duration, release_date, category, referenced_persons, delay = 0, onClick }: VideoCardProps) => {
   const persons = referenced_persons
     .map((id) => topPersons.find((p) => p.id === id)?.name)
     .filter(Boolean);
@@ -32,12 +33,12 @@ const VideoCard = ({ title, description, duration, release_date, category, refer
       transition={{ delay, duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
       whileHover={{ scale: 1.03, transition: { duration: 0.25 } }}
       className="group relative flex-shrink-0 cursor-pointer"
+      onClick={onClick}
     >
       <div className="relative h-[200px] w-[356px] overflow-hidden rounded-sm border-glow border-glow-hover">
         {/* Video thumbnail placeholder */}
         <div className="absolute inset-0 bg-muted/40">
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
-          {/* Scanline overlay effect */}
           <div className="absolute inset-0 opacity-[0.03]" style={{
             backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px)"
           }} />
@@ -84,11 +85,6 @@ const VideoCard = ({ title, description, duration, release_date, category, refer
             </div>
             <span className="font-data text-[10px] text-muted-foreground">{release_date}</span>
           </div>
-        </div>
-
-        {/* External link on hover */}
-        <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-          <ExternalLink size={14} className="text-foreground/60" />
         </div>
       </div>
     </motion.div>

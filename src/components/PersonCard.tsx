@@ -10,7 +10,7 @@ interface PersonCardProps {
   delay?: number;
 }
 
-const PersonCard = ({ name, mention_count, rank, description, onClick, delay = 0 }: PersonCardProps) => {
+const PersonCard = ({ name, mention_count, rank, photo_url, description, onClick, delay = 0 }: PersonCardProps) => {
   const initials = name
     .split(" ")
     .map((n) => n[0])
@@ -35,15 +35,24 @@ const PersonCard = ({ name, mention_count, rank, description, onClick, delay = 0
           {rank}
         </div>
 
-        {/* Avatar placeholder */}
-        <div className="relative z-10 flex h-full w-full items-center justify-center bg-muted/20 grayscale-hover">
-          <div className="flex flex-col items-center gap-2">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full border border-foreground/10 bg-secondary">
-              <span className="font-display text-2xl font-bold text-muted-foreground/50 transition-colors duration-400 group-hover:text-primary">
-                {initials}
-              </span>
+        {/* Avatar / Photo */}
+        <div className="relative z-10 flex h-full w-full items-center justify-center bg-muted/20 grayscale-hover overflow-hidden">
+          {photo_url ? (
+            <img
+              src={photo_url}
+              alt={name}
+              className="h-full w-full object-cover"
+              loading="lazy"
+            />
+          ) : (
+            <div className="flex flex-col items-center gap-2">
+              <div className="flex h-20 w-20 items-center justify-center rounded-full border border-foreground/10 bg-secondary">
+                <span className="font-display text-2xl font-bold text-muted-foreground/50 transition-colors duration-400 group-hover:text-primary">
+                  {initials}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Overlay gradient */}
@@ -57,7 +66,6 @@ const PersonCard = ({ name, mention_count, rank, description, onClick, delay = 0
           <p className="mt-1 font-data text-xs text-primary font-medium">
             {mention_count.toLocaleString()} mentions
           </p>
-          {/* Quick view on hover */}
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
