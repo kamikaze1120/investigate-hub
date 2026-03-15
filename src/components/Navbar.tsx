@@ -3,15 +3,13 @@ import { Search, X, Menu } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
-const sectionIds: Record<string, string> = {
-  "Archive": "section-documents",
-  "Individuals": "section-individuals",
-  "Timeline": "section-timeline",
-  "Videos": "section-videos",
-  "Connections": "section-flights",
-};
-
-const navItems = Object.keys(sectionIds);
+const navItems = [
+  { label: "Archive", sectionId: "section-documents", path: "/documents" },
+  { label: "Individuals", sectionId: "section-individuals", path: "/individuals" },
+  { label: "Timeline", sectionId: "section-timeline", path: "/timeline" },
+  { label: "Videos", sectionId: "section-videos", path: "/videos" },
+  { label: "Connections", sectionId: "section-flights", path: "/flights" },
+];
 
 const Navbar = () => {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -27,21 +25,16 @@ const Navbar = () => {
     }, { passive: true });
   }
 
-  const handleNavClick = (label: string) => {
+  const handleNavClick = (item: typeof navItems[0]) => {
     setMobileMenuOpen(false);
-    if (label === "Individuals") {
-      navigate("/individuals");
-      return;
-    }
-    const sectionId = sectionIds[label];
-    if (location.pathname !== "/") {
-      navigate("/", { state: { scrollTo: sectionId } });
-    } else {
-      const el = document.getElementById(sectionId);
+    if (location.pathname === "/") {
+      const el = document.getElementById(item.sectionId);
       if (el) {
         el.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
       }
     }
+    navigate(item.path);
   };
 
   return (
@@ -57,11 +50,11 @@ const Navbar = () => {
           <div className="hidden items-center gap-1 md:flex">
             {navItems.map((item) => (
               <button
-                key={item}
+                key={item.label}
                 onClick={() => handleNavClick(item)}
                 className="rounded-sm px-3 py-1.5 font-body text-sm text-muted-foreground transition-colors hover:text-foreground hover:bg-secondary/50"
               >
-                {item}
+                {item.label}
               </button>
             ))}
           </div>
@@ -120,11 +113,11 @@ const Navbar = () => {
             <div className="px-6 py-4 space-y-1">
               {navItems.map((item) => (
                 <button
-                  key={item}
+                  key={item.label}
                   onClick={() => handleNavClick(item)}
                   className="block w-full text-left rounded-sm px-3 py-2 font-body text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                 >
-                  {item}
+                  {item.label}
                 </button>
               ))}
             </div>

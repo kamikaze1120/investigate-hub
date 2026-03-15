@@ -6,6 +6,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import PersonProfile from "./pages/PersonProfile.tsx";
 import AllIndividuals from "./pages/AllIndividuals.tsx";
+import AllDocuments from "./pages/AllDocuments.tsx";
+import AllVideos from "./pages/AllVideos.tsx";
+import AllTimeline from "./pages/AllTimeline.tsx";
+import AllFlights from "./pages/AllFlights.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -20,7 +24,10 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/person/:id" element={<PersonProfile />} />
           <Route path="/individuals" element={<AllIndividuals />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/documents" element={<AllDocuments />} />
+          <Route path="/videos" element={<AllVideos />} />
+          <Route path="/timeline" element={<AllTimeline />} />
+          <Route path="/flights" element={<AllFlights />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

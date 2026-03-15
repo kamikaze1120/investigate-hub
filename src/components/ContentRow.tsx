@@ -39,13 +39,15 @@ const ContentRow = ({ title, count, children, accent = false, sectionId, explore
               </span>
             )}
           </div>
-          <button
-            onClick={() => exploreAllPath ? navigate(exploreAllPath) : undefined}
-            className="flex items-center gap-1 font-body text-xs text-muted-foreground transition-colors hover:text-primary group/btn"
-          >
-            Explore All
-            <ChevronRight size={14} className="transition-transform group-hover/btn:translate-x-0.5" />
-          </button>
+          {exploreAllPath && (
+            <button
+              onClick={() => navigate(exploreAllPath)}
+              className="flex items-center gap-1 font-body text-xs text-muted-foreground transition-colors hover:text-primary group/btn"
+            >
+              Explore All
+              <ChevronRight size={14} className="transition-transform group-hover/btn:translate-x-0.5" />
+            </button>
+          )}
         </div>
       </div>
       <div className="mx-auto max-w-[1400px] px-6">
