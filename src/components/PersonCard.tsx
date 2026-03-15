@@ -43,6 +43,7 @@ const PersonCard = ({ name, mention_count, rank, photo_url, description, onClick
               alt={name}
               className="h-full w-full object-cover"
               loading="lazy"
+              onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
             />
           ) : (
             <div className="flex flex-col items-center gap-2">
