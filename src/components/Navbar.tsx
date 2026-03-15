@@ -1,27 +1,48 @@
 import { useState } from "react";
 import { Search, X, Menu } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
-const navItems = [
-  { label: "Archive", path: "/" },
-  { label: "Individuals", path: "/" },
-  { label: "Timeline", path: "/" },
-  { label: "Videos", path: "/" },
-  { label: "Connections", path: "/" },
-];
+const sectionIds: Record<string, string> = {
+  "Archive": "section-documents",
+  "Individuals": "section-individuals",
+  "Timeline": "section-timeline",
+  "Videos": "section-videos",
+  "Connections": "section-flights",
+};
+
+const navItems = Object.keys(sectionIds);
 
 const Navbar = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   if (typeof window !== "undefined") {
     window.addEventListener("scroll", () => {
       setScrolled(window.scrollY > 20);
     }, { passive: true });
   }
+
+  const handleNavClick = (label: string) => {
+    setMobileMenuOpen(false);
+    if (label === "Individuals") {
+      navigate("/individuals");
+      return;
+    }
+    const sectionId = sectionIds[label];
+    if (location.pathname !== "/") {
+      navigate("/", { state: { scrollTo: sectionId } });
+    } else {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  };
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
@@ -35,13 +56,13 @@ const Navbar = () => {
           </Link>
           <div className="hidden items-center gap-1 md:flex">
             {navItems.map((item) => (
-              <Link
-                key={item.label}
-                to={item.path}
+              <button
+                key={item}
+                onClick={() => handleNavClick(item)}
                 className="rounded-sm px-3 py-1.5 font-body text-sm text-muted-foreground transition-colors hover:text-foreground hover:bg-secondary/50"
               >
-                {item.label}
-              </Link>
+                {item}
+              </button>
             ))}
           </div>
         </div>
@@ -98,14 +119,13 @@ const Navbar = () => {
           >
             <div className="px-6 py-4 space-y-1">
               {navItems.map((item) => (
-                <Link
-                  key={item.label}
-                  to={item.path}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block rounded-sm px-3 py-2 font-body text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                <button
+                  key={item}
+                  onClick={() => handleNavClick(item)}
+                  className="block w-full text-left rounded-sm px-3 py-2 font-body text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                 >
-                  {item.label}
-                </Link>
+                  {item}
+                </button>
               ))}
             </div>
           </motion.div>

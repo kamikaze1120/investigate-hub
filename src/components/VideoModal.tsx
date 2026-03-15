@@ -1,5 +1,6 @@
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Play, Clock, Calendar, Tag, Users } from "lucide-react";
+import { X, Play, Pause, Clock, Calendar, Tag, Users, Volume2, VolumeX, Maximize } from "lucide-react";
 import { topPersons } from "@/data/mockData";
 
 interface VideoModalProps {
@@ -24,11 +25,61 @@ const categoryColors: Record<string, string> = {
 };
 
 const VideoModal = ({ isOpen, onClose, video }: VideoModalProps) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [progress, setProgress] = useState(0);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const progressInterval = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setIsPlaying(false);
+      setProgress(0);
+      if (progressInterval.current) clearInterval(progressInterval.current);
+    }
+  }, [isOpen]);
+
   if (!video) return null;
 
   const persons = video.referenced_persons
     .map((id) => topPersons.find((p) => p.id === id))
     .filter(Boolean);
+
+  const handlePlay = () => {
+    const vid = videoRef.current;
+    if (!vid) return;
+
+    if (isPlaying) {
+      vid.pause();
+      setIsPlaying(false);
+      if (progressInterval.current) clearInterval(progressInterval.current);
+    } else {
+      vid.muted = isMuted;
+      vid.playsInline = true;
+      vid.play().catch(() => {});
+      setIsPlaying(true);
+      progressInterval.current = setInterval(() => {
+        if (vid.duration) {
+          setProgress((vid.currentTime / vid.duration) * 100);
+        }
+      }, 200);
+    }
+  };
+
+  const handleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+    }
+    setIsMuted(!isMuted);
+  };
+
+  const handleFullscreen = () => {
+    if (videoRef.current) {
+      if (videoRef.current.requestFullscreen) {
+        videoRef.current.requestFullscreen();
+      }
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -55,34 +106,89 @@ const VideoModal = ({ isOpen, onClose, video }: VideoModalProps) => {
             {/* Close button */}
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-secondary/80 text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+              className="absolute top-4 right-4 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-secondary/80 text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
             >
               <X size={16} />
             </button>
 
-            {/* Video placeholder area */}
-            <div className="relative aspect-video w-full bg-muted/20">
-              <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
+            {/* Video player area */}
+            <div className="relative aspect-video w-full bg-muted/20 cursor-pointer" onClick={handlePlay}>
+              <video
+                ref={videoRef}
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isPlaying ? "opacity-100" : "opacity-30"}`}
+                src="/videos/evidence-reel.mp4"
+                muted={isMuted}
+                playsInline
+                loop
+                preload="auto"
+                onEnded={() => setIsPlaying(false)}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent pointer-events-none" />
               {/* Scanline effect */}
-              <div className="absolute inset-0 opacity-[0.03]" style={{
+              <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
                 backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px)"
               }} />
-              {/* Play button */}
-              <div className="absolute inset-0 flex items-center justify-center">
+
+              {/* Play/Pause button center */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <motion.div
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
-                  className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/90 backdrop-blur-sm cursor-pointer"
+                  className={`flex h-20 w-20 items-center justify-center rounded-full bg-primary/90 backdrop-blur-sm pointer-events-auto cursor-pointer transition-opacity duration-300 ${isPlaying ? "opacity-0 hover:opacity-100" : "opacity-100"}`}
+                  onClick={(e) => { e.stopPropagation(); handlePlay(); }}
                 >
-                  <Play size={32} className="text-primary-foreground ml-1" fill="currentColor" />
+                  {isPlaying ? (
+                    <Pause size={32} className="text-primary-foreground" fill="currentColor" />
+                  ) : (
+                    <Play size={32} className="text-primary-foreground ml-1" fill="currentColor" />
+                  )}
                 </motion.div>
               </div>
+
               {/* Category badge */}
-              <div className="absolute top-4 left-4">
+              <div className="absolute top-4 left-4 z-10">
                 <span className={`rounded-sm px-3 py-1 font-data text-xs font-medium ${categoryColors[video.category] || "bg-muted text-muted-foreground"}`}>
                   {video.category}
                 </span>
               </div>
+
+              {/* Video controls bar */}
+              <div className="absolute bottom-0 left-0 right-0 z-10">
+                {/* Progress bar */}
+                <div className="w-full h-1 bg-muted/30 cursor-pointer" onClick={(e) => {
+                  e.stopPropagation();
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const pct = (e.clientX - rect.left) / rect.width;
+                  if (videoRef.current && videoRef.current.duration) {
+                    videoRef.current.currentTime = pct * videoRef.current.duration;
+                    setProgress(pct * 100);
+                  }
+                }}>
+                  <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
+                </div>
+                {/* Controls */}
+                <div className="flex items-center gap-3 px-4 py-2 bg-background/80 backdrop-blur-sm">
+                  <button onClick={(e) => { e.stopPropagation(); handlePlay(); }} className="text-foreground hover:text-primary transition-colors">
+                    {isPlaying ? <Pause size={16} /> : <Play size={16} />}
+                  </button>
+                  <span className="font-data text-[10px] text-muted-foreground">{video.duration}</span>
+                  <div className="flex-1" />
+                  <button onClick={(e) => { e.stopPropagation(); handleMute(); }} className="text-muted-foreground hover:text-foreground transition-colors">
+                    {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+                  </button>
+                  <button onClick={(e) => { e.stopPropagation(); handleFullscreen(); }} className="text-muted-foreground hover:text-foreground transition-colors">
+                    <Maximize size={14} />
+                  </button>
+                </div>
+              </div>
+
+              {/* EVIDENCE watermark */}
+              {isPlaying && (
+                <div className="absolute top-4 right-14 z-10 flex items-center gap-1.5">
+                  <div className="h-2 w-2 rounded-full bg-primary animate-pulse-red" />
+                  <span className="font-data text-[10px] text-primary font-medium tracking-wider">EVIDENCE</span>
+                </div>
+              )}
             </div>
 
             {/* Content */}

@@ -21,14 +21,14 @@ export interface PersonConnection {
 export const topPersons: Person[] = [
   { id: "1", name: "Jeffrey Epstein", photo_url: "/photos/jeffrey-epstein.jpg", mention_count: 14892, first_mentioned_date: "1998-03-15", description: "Central figure in investigation. Financier and convicted offender." },
   { id: "2", name: "Ghislaine Maxwell", photo_url: "/photos/ghislaine-maxwell.jpg", mention_count: 9841, first_mentioned_date: "1999-06-22", description: "British socialite and convicted accomplice." },
-  { id: "3", name: "Jean-Luc Brunel", photo_url: "", mention_count: 4210, first_mentioned_date: "2001-01-10", description: "French modeling agent referenced across multiple depositions." },
-  { id: "4", name: "Sarah Kellen", photo_url: "", mention_count: 3856, first_mentioned_date: "2000-11-03", description: "Personal assistant referenced in multiple witness testimonies." },
-  { id: "5", name: "Nadia Marcinkova", photo_url: "", mention_count: 3201, first_mentioned_date: "2002-04-18", description: "Referenced in flight logs and witness depositions." },
-  { id: "6", name: "Lesley Groff", photo_url: "", mention_count: 2987, first_mentioned_date: "1999-09-12", description: "Executive assistant mentioned in organizational records." },
-  { id: "7", name: "Virginia Giuffre", photo_url: "", mention_count: 2754, first_mentioned_date: "2001-07-28", description: "Key witness and plaintiff in civil litigation." },
-  { id: "8", name: "Adriana Ross", photo_url: "", mention_count: 2341, first_mentioned_date: "2003-02-14", description: "Referenced in multiple depositions and flight records." },
-  { id: "9", name: "Emmy Tayler", photo_url: "", mention_count: 1998, first_mentioned_date: "2002-08-05", description: "Personal assistant referenced in UK-related documents." },
-  { id: "10", name: "Haley Robson", photo_url: "", mention_count: 1756, first_mentioned_date: "2004-01-20", description: "Referenced in Palm Beach investigation documents." },
+  { id: "3", name: "Jean-Luc Brunel", photo_url: "/photos/jean-luc-brunel.jpg", mention_count: 4210, first_mentioned_date: "2001-01-10", description: "French modeling agent who received $1M wire transfer from Epstein to launch MC2. Charged with sex trafficking. Found dead in Paris prison cell in 2022." },
+  { id: "4", name: "Sarah Kellen", photo_url: "/photos/sarah-kellen.jpg", mention_count: 3856, first_mentioned_date: "2000-11-03", description: "Epstein's primary scheduler and operational coordinator. Named co-conspirator with immunity in 2008 NPA. Appeared on 364+ flight legs." },
+  { id: "5", name: "Nadia Marcinkova", photo_url: "/photos/nadia-marcinkova.jpg", mention_count: 3201, first_mentioned_date: "2002-04-18", description: "Slovak-born associate brought to US as a teenager. Named co-conspirator. Became licensed pilot of Epstein's aircraft." },
+  { id: "6", name: "Lesley Groff", photo_url: "/photos/lesley-groff.jpg", mention_count: 2987, first_mentioned_date: "1999-09-12", description: "Executive assistant for nearly 20 years. Named co-conspirator with immunity in 2008 NPA. Referenced in organizational records." },
+  { id: "7", name: "Virginia Giuffre", photo_url: "/photos/virginia-giuffre.jpg", mention_count: 2754, first_mentioned_date: "2001-07-28", description: "Key witness and plaintiff in civil litigation. Filed landmark defamation case against Maxwell. Died in 2025." },
+  { id: "8", name: "Adriana Ross", photo_url: "/photos/adriana-ross.jpg", mention_count: 2341, first_mentioned_date: "2003-02-14", description: "Named co-conspirator with immunity. Referenced in multiple depositions and flight records." },
+  { id: "9", name: "Emmy Tayler", photo_url: "/photos/emmy-tayler.jpg", mention_count: 1998, first_mentioned_date: "2002-08-05", description: "Personal assistant referenced in UK-related documents. Born in Oxford, England." },
+  { id: "10", name: "Haley Robson", photo_url: "/photos/haley-robson.jpg", mention_count: 1756, first_mentioned_date: "2004-01-20", description: "Referenced in Palm Beach investigation documents. Named in police conclusions alongside Sarah Kellen." },
 ];
 
 export const recentDocuments: Document[] = [
