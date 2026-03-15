@@ -19,8 +19,8 @@ export interface PersonConnection {
 }
 
 export const topPersons: Person[] = [
-  { id: "1", name: "Jeffrey Epstein", photo_url: "", mention_count: 14892, first_mentioned_date: "1998-03-15", description: "Central figure in investigation. Financier and convicted offender." },
-  { id: "2", name: "Ghislaine Maxwell", photo_url: "", mention_count: 9841, first_mentioned_date: "1999-06-22", description: "British socialite and convicted accomplice." },
+  { id: "1", name: "Jeffrey Epstein", photo_url: "/photos/jeffrey-epstein.jpg", mention_count: 14892, first_mentioned_date: "1998-03-15", description: "Central figure in investigation. Financier and convicted offender." },
+  { id: "2", name: "Ghislaine Maxwell", photo_url: "/photos/ghislaine-maxwell.jpg", mention_count: 9841, first_mentioned_date: "1999-06-22", description: "British socialite and convicted accomplice." },
   { id: "3", name: "Jean-Luc Brunel", photo_url: "", mention_count: 4210, first_mentioned_date: "2001-01-10", description: "French modeling agent referenced across multiple depositions." },
   { id: "4", name: "Sarah Kellen", photo_url: "", mention_count: 3856, first_mentioned_date: "2000-11-03", description: "Personal assistant referenced in multiple witness testimonies." },
   { id: "5", name: "Nadia Marcinkova", photo_url: "", mention_count: 3201, first_mentioned_date: "2002-04-18", description: "Referenced in flight logs and witness depositions." },
@@ -40,6 +40,10 @@ export const recentDocuments: Document[] = [
   { id: "d6", title: "Property Records — Little St. James Island", dataset_number: "DOC-2010-2847", release_date: "2024-01-03", document_type: "Financial Record", thumbnail_url: "", source_url: "#", summary: "Land deed transfers and property records for USVI holdings.", referenced_persons: ["1"] },
   { id: "d7", title: "Grand Jury Transcript — 2006 Proceedings", dataset_number: "DOC-2019-4501", release_date: "2023-12-28", document_type: "Legal Filing", thumbnail_url: "", source_url: "#", summary: "Partial transcript of grand jury proceedings in Palm Beach County.", referenced_persons: ["1", "4", "10"] },
   { id: "d8", title: "Maxwell Deposition — Giuffre v. Maxwell", dataset_number: "DOC-2016-5102", release_date: "2023-12-22", document_type: "Legal Filing", thumbnail_url: "", source_url: "#", summary: "Sealed deposition released by court order. Testimony regarding recruitment activities.", referenced_persons: ["2", "7"] },
+  { id: "d9", title: "Brunel Modeling Agency Financial Records", dataset_number: "DOC-2011-1847", release_date: "2023-12-18", document_type: "Financial Record", thumbnail_url: "", source_url: "#", summary: "Financial records from MC2 modeling agency showing payments and transactions.", referenced_persons: ["1", "3"] },
+  { id: "d10", title: "Witness Statement — Palm Beach Investigation", dataset_number: "DOC-2006-0923", release_date: "2023-12-14", document_type: "Witness Testimony", thumbnail_url: "", source_url: "#", summary: "Witness statement provided to Palm Beach PD during initial investigation phase.", referenced_persons: ["1", "10"] },
+  { id: "d11", title: "FAA Aircraft Registration — N908JE", dataset_number: "DOC-2003-0441", release_date: "2023-12-10", document_type: "Flight Log", thumbnail_url: "", source_url: "#", summary: "Federal Aviation Administration registration records for the Boeing 727-31.", referenced_persons: ["1"] },
+  { id: "d12", title: "Civil Complaint — Jane Doe v. Epstein", dataset_number: "DOC-2009-2203", release_date: "2023-12-06", document_type: "Legal Filing", thumbnail_url: "", source_url: "#", summary: "Civil complaint filed under pseudonym detailing allegations from 2001-2004.", referenced_persons: ["1", "2", "4"] },
 ];
 
 export const flightLogs: Flight[] = [
@@ -49,6 +53,10 @@ export const flightLogs: Flight[] = [
   { id: "f4", date: "2003-09-22", origin: "Teterboro, NJ", destination: "Santa Fe, NM", document_reference: "DOC-2009-1203", passengers: ["1", "6"] },
   { id: "f5", date: "2004-02-14", origin: "Palm Beach, FL", destination: "St. Thomas, USVI", document_reference: "DOC-2009-1203", passengers: ["1", "2", "5", "9"] },
   { id: "f6", date: "2005-07-30", origin: "Paris, France", destination: "Teterboro, NJ", document_reference: "DOC-2009-1203", passengers: ["1", "3"] },
+  { id: "f7", date: "2001-11-15", origin: "Teterboro, NJ", destination: "Palm Beach, FL", document_reference: "DOC-2009-1203", passengers: ["1", "2", "7"] },
+  { id: "f8", date: "2004-08-03", origin: "Santa Fe, NM", destination: "Teterboro, NJ", document_reference: "DOC-2009-1203", passengers: ["1", "4", "6"] },
+  { id: "f9", date: "2005-03-19", origin: "St. Thomas, USVI", destination: "Palm Beach, FL", document_reference: "DOC-2009-1203", passengers: ["1", "2", "8"] },
+  { id: "f10", date: "2003-06-07", origin: "Paris, France", destination: "London, UK", document_reference: "DOC-2009-1203", passengers: ["1", "3", "9"] },
 ];
 
 export const timelineEvents: TimelineEvent[] = [
@@ -60,6 +68,10 @@ export const timelineEvents: TimelineEvent[] = [
   { id: "t6", date: "2019-07-06", event_title: "Arrest at Teterboro Airport", description: "Arrested on federal charges upon arrival from Paris.", associated_persons: ["1"] },
   { id: "t7", date: "2020-07-02", event_title: "Maxwell Arrested", description: "Arrested in New Hampshire on federal charges.", associated_persons: ["2"] },
   { id: "t8", date: "2024-01-03", event_title: "Document Release — Court Order", description: "Federal court orders release of sealed documents from civil case.", associated_persons: ["1", "2", "7"] },
+  { id: "t9", date: "2008-03-20", event_title: "Epstein Pleads Guilty in Florida", description: "Pleads guilty to state prostitution charges as part of plea deal.", associated_persons: ["1"] },
+  { id: "t10", date: "2019-08-10", event_title: "Death in Metropolitan Correctional Center", description: "Found deceased in federal jail cell. Ruled suicide by medical examiner.", associated_persons: ["1"] },
+  { id: "t11", date: "2021-12-29", event_title: "Maxwell Found Guilty", description: "Convicted on five of six counts including sex trafficking of a minor.", associated_persons: ["2"] },
+  { id: "t12", date: "2022-02-19", event_title: "Brunel Found Dead", description: "Found dead in Paris prison cell while awaiting trial.", associated_persons: ["3"] },
 ];
 
 export const releasedVideos: Video[] = [
@@ -71,6 +83,8 @@ export const releasedVideos: Video[] = [
   { id: "v6", title: "Aerial Footage — Little St. James Island", description: "Drone and aerial footage of the private island property in the U.S. Virgin Islands.", duration: "8:17", release_date: "2023-12-25", source_url: "#", category: "Evidence", referenced_persons: ["1"] },
   { id: "v7", title: "Interview Footage — Palm Beach Detective", description: "Recorded interview with lead detective from the Palm Beach Police Department investigation.", duration: "34:56", release_date: "2023-12-20", source_url: "#", category: "Interview", referenced_persons: ["1", "6"] },
   { id: "v8", title: "Deposition Video — Ghislaine Maxwell (2016)", description: "Sealed video deposition released by federal court order from the civil defamation case.", duration: "3:08:44", release_date: "2023-12-15", source_url: "#", category: "Legal Proceeding", referenced_persons: ["2"] },
+  { id: "v9", title: "Surveillance — New York Townhouse Entrance", description: "Security footage from the entrance of the East 71st Street property showing visitors.", duration: "6:42", release_date: "2023-12-10", source_url: "#", category: "Surveillance", referenced_persons: ["1", "2", "4"] },
+  { id: "v10", title: "Witness Interview — Haley Robson", description: "Recorded law enforcement interview during the Palm Beach County investigation.", duration: "1:12:30", release_date: "2023-12-05", source_url: "#", category: "Interview", referenced_persons: ["10", "1"] },
 ];
 
 export const personConnections: PersonConnection[] = [
@@ -79,10 +93,16 @@ export const personConnections: PersonConnection[] = [
   { person_id: "1", connected_to: "4", shared_documents: 567, relationship: "Employee" },
   { person_id: "1", connected_to: "5", shared_documents: 234, relationship: "Referenced" },
   { person_id: "1", connected_to: "6", shared_documents: 445, relationship: "Employee" },
+  { person_id: "1", connected_to: "7", shared_documents: 412, relationship: "Plaintiff" },
+  { person_id: "1", connected_to: "8", shared_documents: 198, relationship: "Referenced" },
+  { person_id: "1", connected_to: "9", shared_documents: 134, relationship: "Referenced" },
+  { person_id: "1", connected_to: "10", shared_documents: 167, relationship: "Referenced" },
   { person_id: "2", connected_to: "3", shared_documents: 198, relationship: "Associate" },
   { person_id: "2", connected_to: "7", shared_documents: 523, relationship: "Legal Dispute" },
+  { person_id: "2", connected_to: "4", shared_documents: 289, relationship: "Associate" },
+  { person_id: "2", connected_to: "9", shared_documents: 112, relationship: "Associate" },
   { person_id: "4", connected_to: "6", shared_documents: 156, relationship: "Colleague" },
-  { person_id: "7", connected_to: "1", shared_documents: 412, relationship: "Plaintiff" },
+  { person_id: "3", connected_to: "5", shared_documents: 89, relationship: "Referenced" },
 ];
 
 export const documentTypes = ["All", "Legal Filing", "Law Enforcement", "Flight Log", "Financial Record", "Witness Testimony", "Photo Evidence", "Surveillance"];

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Search, X, Menu } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const navItems = [
   { label: "Archive", path: "/" },
@@ -17,7 +17,6 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // Track scroll for navbar bg
   if (typeof window !== "undefined") {
     window.addEventListener("scroll", () => {
       setScrolled(window.scrollY > 20);
@@ -31,8 +30,7 @@ const Navbar = () => {
       <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-6">
         <div className="flex items-center gap-8">
           <Link to="/" className="flex items-center gap-1">
-            <span className="font-display text-xl font-black tracking-tighter text-primary">EPI</span>
-            <span className="font-display text-xl font-light tracking-tighter text-foreground/40">—</span>
+            <span className="font-display text-xl font-black tracking-tighter text-primary">DREAD</span>
             <span className="font-display text-xl font-black tracking-tighter text-foreground">FLIX</span>
           </Link>
           <div className="hidden items-center gap-1 md:flex">
@@ -89,7 +87,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div

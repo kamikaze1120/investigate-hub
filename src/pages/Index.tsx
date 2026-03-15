@@ -8,12 +8,14 @@ import DocumentCard from "@/components/DocumentCard";
 import FlightCard from "@/components/FlightCard";
 import TimelineCard from "@/components/TimelineCard";
 import VideoCard from "@/components/VideoCard";
+import VideoModal from "@/components/VideoModal";
 import ContentRow from "@/components/ContentRow";
 import DisclaimerModal from "@/components/DisclaimerModal";
-import { topPersons, recentDocuments, flightLogs, timelineEvents, releasedVideos } from "@/data/mockData";
+import { topPersons, recentDocuments, flightLogs, timelineEvents, releasedVideos, type Video } from "@/data/mockData";
 
 const Index = () => {
   const [disclaimerAcknowledged, setDisclaimerAcknowledged] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const navigate = useNavigate();
 
   return (
@@ -21,6 +23,12 @@ const Index = () => {
       <DisclaimerModal
         isOpen={!disclaimerAcknowledged}
         onAcknowledge={() => setDisclaimerAcknowledged(true)}
+      />
+
+      <VideoModal
+        isOpen={!!selectedVideo}
+        onClose={() => setSelectedVideo(null)}
+        video={selectedVideo}
       />
 
       {disclaimerAcknowledged && (
@@ -60,12 +68,13 @@ const Index = () => {
                   release_date={video.release_date}
                   category={video.category}
                   referenced_persons={video.referenced_persons}
+                  onClick={() => setSelectedVideo(video)}
                   delay={i * 0.06}
                 />
               ))}
             </ContentRow>
 
-            {/* Recently Released */}
+            {/* Recently Released Documents */}
             <ContentRow title="Recently Released Documents" count={recentDocuments.length}>
               {recentDocuments.map((doc, i) => (
                 <DocumentCard
@@ -114,8 +123,7 @@ const Index = () => {
                 <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
                   <div>
                     <div className="flex items-center gap-1 mb-2">
-                      <span className="font-display text-lg font-black text-primary">EPI</span>
-                      <span className="font-display text-lg font-light text-foreground/40">—</span>
+                      <span className="font-display text-lg font-black text-primary">DREAD</span>
                       <span className="font-display text-lg font-black text-foreground">FLIX</span>
                     </div>
                     <p className="font-body text-xs text-muted-foreground max-w-xs">
@@ -134,7 +142,7 @@ const Index = () => {
                     <div>
                       <h3 className="font-display text-xs font-bold text-foreground uppercase tracking-wider mb-3">Legal</h3>
                       <div className="space-y-2">
-                        {["Disclaimer", "Sources", "FOIA Requests", "Contact"].map((link) => (
+                        {["Disclaimer", "Sources", "FOIA Requests"].map((link) => (
                           <p key={link} className="font-body text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors">{link}</p>
                         ))}
                       </div>
@@ -146,7 +154,7 @@ const Index = () => {
                     THIS PLATFORM DOES NOT HOST ORIGINAL FILES. METADATA AND SOURCE LINKS ONLY.
                   </p>
                   <p className="font-data text-[10px] text-muted-foreground/40">
-                    © {new Date().getFullYear()} EPI-FLIX
+                    © {new Date().getFullYear()} DREADFLIX
                   </p>
                 </div>
               </div>
