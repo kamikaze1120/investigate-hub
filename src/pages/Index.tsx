@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import HeroStats from "@/components/HeroStats";
@@ -17,6 +17,20 @@ const Index = () => {
   const [disclaimerAcknowledged, setDisclaimerAcknowledged] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Handle scroll-to from nav
+  useEffect(() => {
+    const state = location.state as { scrollTo?: string } | null;
+    if (state?.scrollTo && disclaimerAcknowledged) {
+      setTimeout(() => {
+        const el = document.getElementById(state.scrollTo!);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+      // Clear state
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state, disclaimerAcknowledged]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -42,7 +56,7 @@ const Index = () => {
             <HeroStats />
 
             {/* Top 10 Individuals */}
-            <ContentRow title="Top 10 Most Mentioned" count={10} accent>
+            <ContentRow title="Top 10 Most Mentioned" count={10} accent sectionId="section-individuals" exploreAllPath="/individuals">
               {topPersons.map((person, i) => (
                 <PersonCard
                   key={person.id}
@@ -58,7 +72,7 @@ const Index = () => {
             </ContentRow>
 
             {/* Released Videos */}
-            <ContentRow title="Released Video Evidence" count={releasedVideos.length} accent>
+            <ContentRow title="Released Video Evidence" count={releasedVideos.length} accent sectionId="section-videos">
               {releasedVideos.map((video, i) => (
                 <VideoCard
                   key={video.id}
@@ -75,7 +89,7 @@ const Index = () => {
             </ContentRow>
 
             {/* Recently Released Documents */}
-            <ContentRow title="Recently Released Documents" count={recentDocuments.length}>
+            <ContentRow title="Recently Released Documents" count={recentDocuments.length} sectionId="section-documents">
               {recentDocuments.map((doc, i) => (
                 <DocumentCard
                   key={doc.id}
@@ -90,7 +104,7 @@ const Index = () => {
             </ContentRow>
 
             {/* Flight Logs */}
-            <ContentRow title="Flight Logs" count={flightLogs.length}>
+            <ContentRow title="Flight Logs" count={flightLogs.length} sectionId="section-flights">
               {flightLogs.map((flight, i) => (
                 <FlightCard
                   key={flight.id}
@@ -104,7 +118,7 @@ const Index = () => {
             </ContentRow>
 
             {/* Timeline */}
-            <ContentRow title="Timeline Highlights" count={timelineEvents.length}>
+            <ContentRow title="Timeline Highlights" count={timelineEvents.length} sectionId="section-timeline">
               {timelineEvents.map((event, i) => (
                 <TimelineCard
                   key={event.id}
