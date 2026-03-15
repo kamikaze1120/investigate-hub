@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Play, Pause, Clock, Calendar, Tag, Users, Volume2, VolumeX, Maximize } from "lucide-react";
+import { X, Play, Pause, Clock, Calendar, Tag, Users, Volume2, VolumeX, Maximize, AlertTriangle } from "lucide-react";
 import { topPersons } from "@/data/mockData";
 
 interface VideoModalProps {
@@ -26,60 +26,32 @@ const categoryColors: Record<string, string> = {
 
 const VideoModal = ({ isOpen, onClose, video }: VideoModalProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
   const [progress, setProgress] = useState(0);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const progressInterval = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!isOpen) {
       setIsPlaying(false);
       setProgress(0);
-      if (progressInterval.current) clearInterval(progressInterval.current);
     }
   }, [isOpen]);
+
+  // Simulate playback progress
+  useEffect(() => {
+    if (!isPlaying) return;
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) { setIsPlaying(false); return 0; }
+        return prev + 0.5;
+      });
+    }, 100);
+    return () => clearInterval(interval);
+  }, [isPlaying]);
 
   if (!video) return null;
 
   const persons = video.referenced_persons
     .map((id) => topPersons.find((p) => p.id === id))
     .filter(Boolean);
-
-  const handlePlay = () => {
-    const vid = videoRef.current;
-    if (!vid) return;
-
-    if (isPlaying) {
-      vid.pause();
-      setIsPlaying(false);
-      if (progressInterval.current) clearInterval(progressInterval.current);
-    } else {
-      vid.muted = isMuted;
-      vid.playsInline = true;
-      vid.play().catch(() => {});
-      setIsPlaying(true);
-      progressInterval.current = setInterval(() => {
-        if (vid.duration) {
-          setProgress((vid.currentTime / vid.duration) * 100);
-        }
-      }, 200);
-    }
-  };
-
-  const handleMute = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-    }
-    setIsMuted(!isMuted);
-  };
-
-  const handleFullscreen = () => {
-    if (videoRef.current) {
-      if (videoRef.current.requestFullscreen) {
-        videoRef.current.requestFullscreen();
-      }
-    }
-  };
 
   return (
     <AnimatePresence>
@@ -97,11 +69,11 @@ const VideoModal = ({ isOpen, onClose, video }: VideoModalProps) => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className="relative w-full max-w-2xl overflow-hidden rounded-sm border-glow bg-card card-shadow"
+            className="relative w-full max-w-2xl overflow-hidden rounded-sm border-glow bg-card card-shadow max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Red accent line */}
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent" />
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent z-10" />
 
             {/* Close button */}
             <button
@@ -112,30 +84,26 @@ const VideoModal = ({ isOpen, onClose, video }: VideoModalProps) => {
             </button>
 
             {/* Video player area */}
-            <div className="relative aspect-video w-full bg-muted/20 cursor-pointer" onClick={handlePlay}>
-              <video
-                ref={videoRef}
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isPlaying ? "opacity-100" : "opacity-30"}`}
-                src="/videos/evidence-reel.mp4"
-                muted={isMuted}
-                playsInline
-                loop
-                preload="auto"
-                onEnded={() => setIsPlaying(false)}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent pointer-events-none" />
+            <div
+              className="relative aspect-video w-full bg-muted/10 cursor-pointer"
+              onClick={() => setIsPlaying(!isPlaying)}
+            >
               {/* Scanline effect */}
-              <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
+              <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{
                 backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px)"
               }} />
 
-              {/* Play/Pause button center */}
+              {/* Simulated static/noise overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-muted/5 via-transparent to-primary/5 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent pointer-events-none" />
+
+              {/* Play/Pause center button */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <motion.div
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   className={`flex h-20 w-20 items-center justify-center rounded-full bg-primary/90 backdrop-blur-sm pointer-events-auto cursor-pointer transition-opacity duration-300 ${isPlaying ? "opacity-0 hover:opacity-100" : "opacity-100"}`}
-                  onClick={(e) => { e.stopPropagation(); handlePlay(); }}
+                  onClick={(e) => { e.stopPropagation(); setIsPlaying(!isPlaying); }}
                 >
                   {isPlaying ? (
                     <Pause size={32} className="text-primary-foreground" fill="currentColor" />
@@ -152,43 +120,37 @@ const VideoModal = ({ isOpen, onClose, video }: VideoModalProps) => {
                 </span>
               </div>
 
-              {/* Video controls bar */}
+              {/* EVIDENCE watermark */}
+              {isPlaying && (
+                <div className="absolute top-4 right-14 z-10 flex items-center gap-1.5">
+                  <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                  <span className="font-data text-[10px] text-primary font-medium tracking-wider">EVIDENCE</span>
+                </div>
+              )}
+
+              {/* Controls bar */}
               <div className="absolute bottom-0 left-0 right-0 z-10">
-                {/* Progress bar */}
                 <div className="w-full h-1 bg-muted/30 cursor-pointer" onClick={(e) => {
                   e.stopPropagation();
                   const rect = e.currentTarget.getBoundingClientRect();
-                  const pct = (e.clientX - rect.left) / rect.width;
-                  if (videoRef.current && videoRef.current.duration) {
-                    videoRef.current.currentTime = pct * videoRef.current.duration;
-                    setProgress(pct * 100);
-                  }
+                  setProgress(((e.clientX - rect.left) / rect.width) * 100);
                 }}>
                   <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
                 </div>
-                {/* Controls */}
                 <div className="flex items-center gap-3 px-4 py-2 bg-background/80 backdrop-blur-sm">
-                  <button onClick={(e) => { e.stopPropagation(); handlePlay(); }} className="text-foreground hover:text-primary transition-colors">
+                  <button onClick={(e) => { e.stopPropagation(); setIsPlaying(!isPlaying); }} className="text-foreground hover:text-primary transition-colors">
                     {isPlaying ? <Pause size={16} /> : <Play size={16} />}
                   </button>
                   <span className="font-data text-[10px] text-muted-foreground">{video.duration}</span>
                   <div className="flex-1" />
-                  <button onClick={(e) => { e.stopPropagation(); handleMute(); }} className="text-muted-foreground hover:text-foreground transition-colors">
-                    {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+                  <button onClick={(e) => e.stopPropagation()} className="text-muted-foreground hover:text-foreground transition-colors">
+                    <Volume2 size={14} />
                   </button>
-                  <button onClick={(e) => { e.stopPropagation(); handleFullscreen(); }} className="text-muted-foreground hover:text-foreground transition-colors">
+                  <button onClick={(e) => e.stopPropagation()} className="text-muted-foreground hover:text-foreground transition-colors">
                     <Maximize size={14} />
                   </button>
                 </div>
               </div>
-
-              {/* EVIDENCE watermark */}
-              {isPlaying && (
-                <div className="absolute top-4 right-14 z-10 flex items-center gap-1.5">
-                  <div className="h-2 w-2 rounded-full bg-primary animate-pulse-red" />
-                  <span className="font-data text-[10px] text-primary font-medium tracking-wider">EVIDENCE</span>
-                </div>
-              )}
             </div>
 
             {/* Content */}
@@ -200,7 +162,6 @@ const VideoModal = ({ isOpen, onClose, video }: VideoModalProps) => {
                 {video.description}
               </p>
 
-              {/* Meta info */}
               <div className="flex flex-wrap gap-4">
                 <div className="flex items-center gap-2">
                   <Clock size={14} className="text-muted-foreground/60" />
@@ -216,7 +177,6 @@ const VideoModal = ({ isOpen, onClose, video }: VideoModalProps) => {
                 </div>
               </div>
 
-              {/* Referenced persons */}
               {persons.length > 0 && (
                 <div className="pt-2 border-t border-border/30">
                   <div className="flex items-center gap-2 mb-3">
@@ -225,12 +185,9 @@ const VideoModal = ({ isOpen, onClose, video }: VideoModalProps) => {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {persons.map((person) => (
-                      <div
-                        key={person!.id}
-                        className="flex items-center gap-2 rounded-sm bg-secondary/80 px-3 py-1.5"
-                      >
+                      <div key={person!.id} className="flex items-center gap-2 rounded-sm bg-secondary/80 px-3 py-1.5">
                         {person!.photo_url ? (
-                          <img src={person!.photo_url} alt={person!.name} className="h-5 w-5 rounded-full object-cover" />
+                          <img src={person!.photo_url} alt={person!.name} className="h-5 w-5 rounded-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                         ) : (
                           <div className="h-5 w-5 rounded-full bg-muted flex items-center justify-center">
                             <span className="font-data text-[8px] text-muted-foreground">{person!.name.split(" ").map(n => n[0]).join("")}</span>
@@ -244,10 +201,13 @@ const VideoModal = ({ isOpen, onClose, video }: VideoModalProps) => {
                 </div>
               )}
 
-              {/* Disclaimer */}
-              <p className="font-data text-[10px] text-muted-foreground/40 tracking-wider uppercase pt-2">
-                This platform indexes metadata only. Original video hosted at official source.
-              </p>
+              {/* Notice */}
+              <div className="flex items-start gap-2 rounded-sm bg-secondary/50 p-3 mt-2">
+                <AlertTriangle size={14} className="text-muted-foreground/60 mt-0.5 shrink-0" />
+                <p className="font-data text-[10px] text-muted-foreground/60 leading-relaxed">
+                  This platform indexes metadata and descriptions only. Original video evidence is maintained at official government and court repositories. Access may require FOIA requests or court authorization.
+                </p>
+              </div>
             </div>
           </motion.div>
         </motion.div>

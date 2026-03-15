@@ -19,7 +19,6 @@ const Index = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Handle scroll-to from nav
   useEffect(() => {
     const state = location.state as { scrollTo?: string } | null;
     if (state?.scrollTo && disclaimerAcknowledged) {
@@ -27,7 +26,6 @@ const Index = () => {
         const el = document.getElementById(state.scrollTo!);
         if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 100);
-      // Clear state
       window.history.replaceState({}, document.title);
     }
   }, [location.state, disclaimerAcknowledged]);
@@ -55,7 +53,6 @@ const Index = () => {
           <main className="pt-16">
             <HeroStats />
 
-            {/* Top 10 Individuals */}
             <ContentRow title="Top 10 Most Mentioned" count={10} accent sectionId="section-individuals" exploreAllPath="/individuals">
               {topPersons.map((person, i) => (
                 <PersonCard
@@ -71,8 +68,7 @@ const Index = () => {
               ))}
             </ContentRow>
 
-            {/* Released Videos */}
-            <ContentRow title="Released Video Evidence" count={releasedVideos.length} accent sectionId="section-videos">
+            <ContentRow title="Released Video Evidence" count={releasedVideos.length} accent sectionId="section-videos" exploreAllPath="/videos">
               {releasedVideos.map((video, i) => (
                 <VideoCard
                   key={video.id}
@@ -88,8 +84,7 @@ const Index = () => {
               ))}
             </ContentRow>
 
-            {/* Recently Released Documents */}
-            <ContentRow title="Recently Released Documents" count={recentDocuments.length} sectionId="section-documents">
+            <ContentRow title="Recently Released Documents" count={recentDocuments.length} sectionId="section-documents" exploreAllPath="/documents">
               {recentDocuments.map((doc, i) => (
                 <DocumentCard
                   key={doc.id}
@@ -103,8 +98,7 @@ const Index = () => {
               ))}
             </ContentRow>
 
-            {/* Flight Logs */}
-            <ContentRow title="Flight Logs" count={flightLogs.length} sectionId="section-flights">
+            <ContentRow title="Flight Logs" count={flightLogs.length} sectionId="section-flights" exploreAllPath="/flights">
               {flightLogs.map((flight, i) => (
                 <FlightCard
                   key={flight.id}
@@ -117,8 +111,7 @@ const Index = () => {
               ))}
             </ContentRow>
 
-            {/* Timeline */}
-            <ContentRow title="Timeline Highlights" count={timelineEvents.length} sectionId="section-timeline">
+            <ContentRow title="Timeline Highlights" count={timelineEvents.length} sectionId="section-timeline" exploreAllPath="/timeline">
               {timelineEvents.map((event, i) => (
                 <TimelineCard
                   key={event.id}
@@ -148,17 +141,18 @@ const Index = () => {
                     <div>
                       <h3 className="font-display text-xs font-bold text-foreground uppercase tracking-wider mb-3">Archive</h3>
                       <div className="space-y-2">
-                        {["Documents", "Individuals", "Flight Logs", "Timeline"].map((link) => (
-                          <p key={link} className="font-body text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors">{link}</p>
-                        ))}
+                        <p onClick={() => navigate("/documents")} className="font-body text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors">Documents</p>
+                        <p onClick={() => navigate("/individuals")} className="font-body text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors">Individuals</p>
+                        <p onClick={() => navigate("/flights")} className="font-body text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors">Flight Logs</p>
+                        <p onClick={() => navigate("/timeline")} className="font-body text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors">Timeline</p>
                       </div>
                     </div>
                     <div>
                       <h3 className="font-display text-xs font-bold text-foreground uppercase tracking-wider mb-3">Legal</h3>
                       <div className="space-y-2">
-                        {["Disclaimer", "Sources", "FOIA Requests"].map((link) => (
-                          <p key={link} className="font-body text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors">{link}</p>
-                        ))}
+                        <p onClick={() => navigate("/documents", { state: { filter: "Legal Filing" } })} className="font-body text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors">Legal Filings</p>
+                        <p onClick={() => navigate("/documents", { state: { filter: "Witness Testimony" } })} className="font-body text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors">Testimonies</p>
+                        <p onClick={() => navigate("/documents", { state: { filter: "Law Enforcement" } })} className="font-body text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors">FOIA Requests</p>
                       </div>
                     </div>
                   </div>

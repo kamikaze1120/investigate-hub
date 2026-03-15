@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
 
 const stats = [
@@ -6,6 +7,15 @@ const stats = [
   { label: "Individuals Referenced", value: 21847, suffix: "" },
   { label: "Flight Records", value: 3291, suffix: "" },
   { label: "Datasets Released", value: 47, suffix: "" },
+];
+
+const categories = [
+  { label: "All Records", filter: "All", path: "/documents" },
+  { label: "Legal Filings", filter: "Legal Filing", path: "/documents" },
+  { label: "Flight Logs", filter: "Flight Log", path: "/flights" },
+  { label: "Financial Records", filter: "Financial Record", path: "/documents" },
+  { label: "Testimonies", filter: "Witness Testimony", path: "/documents" },
+  { label: "Surveillance", filter: "Surveillance", path: "/documents" },
 ];
 
 const AnimatedCounter = ({ target, delay }: { target: number; delay: number }) => {
@@ -38,9 +48,20 @@ const AnimatedCounter = ({ target, delay }: { target: number; delay: number }) =
 };
 
 const HeroStats = () => {
+  const navigate = useNavigate();
+  const [activeCategory, setActiveCategory] = useState(0);
+
+  const handleCategoryClick = (cat: typeof categories[0], index: number) => {
+    setActiveCategory(index);
+    if (cat.path === "/flights") {
+      navigate("/flights");
+    } else {
+      navigate("/documents", { state: { filter: cat.filter } });
+    }
+  };
+
   return (
     <div className="relative">
-      {/* Red glow at top */}
       <div className="absolute top-0 left-0 right-0 h-[300px] red-glow pointer-events-none" />
       
       <div className="relative mx-auto max-w-[1400px] px-6 py-16 md:py-24">
@@ -91,19 +112,19 @@ const HeroStats = () => {
           ))}
         </motion.div>
 
-        {/* Category filters */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1, duration: 0.5 }}
           className="mt-10 flex flex-wrap gap-2"
         >
-          {["All Records", "Legal Filings", "Flight Logs", "Financial Records", "Testimonies", "Surveillance"].map((cat, i) => (
+          {categories.map((cat, i) => (
             <button
-              key={cat}
-              className={i === 0 ? "category-pill category-pill-active" : "category-pill category-pill-inactive"}
+              key={cat.label}
+              onClick={() => handleCategoryClick(cat, i)}
+              className={i === activeCategory ? "category-pill category-pill-active" : "category-pill category-pill-inactive"}
             >
-              {cat}
+              {cat.label}
             </button>
           ))}
         </motion.div>
