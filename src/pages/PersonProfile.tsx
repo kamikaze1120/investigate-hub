@@ -245,8 +245,7 @@ const PersonProfile = () => {
                     </p>
                     <div className="mt-2 flex flex-wrap gap-1">
                       {flight.passengers.map((pid) => {
-                        const p = topPersons.find((tp) => tp.id === pid);
-                        const pName = p?.name || (pid === id ? name : pid);
+                        const pName = personNames.get(pid) || (pid === id ? name : pid);
                         return (
                           <span key={pid} className={`rounded-sm px-1.5 py-0.5 font-data text-[10px] ${pid === id ? "bg-primary/20 text-primary" : "bg-secondary text-secondary-foreground"}`}>
                             {pName}
