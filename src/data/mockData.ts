@@ -277,23 +277,25 @@ const buildGeneratedVideo = (position: number): Video => {
   const index = curatedVideoRecords.length + position;
   const category = generatedVideoCategories[index % generatedVideoCategories.length];
   const titlePrefix = generatedVideoTitlePrefixes[index % generatedVideoTitlePrefixes.length];
+  const title = `${titlePrefix} — Archive Entry ${pad(index + 1, 4)}`;
   const description = generatedVideoDescriptionTemplates[index % generatedVideoDescriptionTemplates.length];
-  const media = getVideoMediaAsset(index);
+  const duration = generatedVideoDurations[index % generatedVideoDurations.length];
+  const media = getVideoMediaAsset(index, title, category, duration);
 
   const referenced = [
-    topPersons[index % topPersons.length].id,
-    topPersons[(index + 2) % topPersons.length].id,
+    pickReferencedPersonId(index, 5),
+    pickReferencedPersonId(index, 6),
   ];
 
   if (index % 4 === 0) {
-    referenced.push(topPersons[(index + 5) % topPersons.length].id);
+    referenced.push(pickReferencedPersonId(index, 7));
   }
 
   return {
     id: `v${index + 1}`,
-    title: `${titlePrefix} — Archive Entry ${pad(index + 1, 4)}`,
+    title,
     description,
-    duration: generatedVideoDurations[index % generatedVideoDurations.length],
+    duration,
     release_date: buildDate(index, 2020, 5),
     source_url: media.source_url,
     thumbnail_url: media.thumbnail_url,
@@ -303,7 +305,7 @@ const buildGeneratedVideo = (position: number): Video => {
 };
 
 const curatedVideos: Video[] = curatedVideoRecords.map((record, index) => {
-  const media = getVideoMediaAsset(index);
+  const media = getVideoMediaAsset(index, record.title, record.category, record.duration);
   return {
     id: `v${index + 1}`,
     ...record,
