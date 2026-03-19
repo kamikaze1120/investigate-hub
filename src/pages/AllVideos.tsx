@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Search, Play, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import VideoModal from "@/components/VideoModal";
-import { releasedVideos, topPersons, type Video } from "@/data/mockData";
+import { releasedVideos, type Video } from "@/data/mockData";
+import { allIndividuals } from "@/data/allIndividuals";
 
 const categoryColors: Record<string, string> = {
   Surveillance: "bg-primary/20 text-primary",
