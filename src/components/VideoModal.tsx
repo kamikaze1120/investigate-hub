@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Play, Pause, Calendar, Tag, Users, Volume2, VolumeX, Maximize, AlertTriangle } from "lucide-react";
 import { topPersons } from "@/data/mockData";
@@ -67,10 +67,9 @@ const VideoModal = ({ isOpen, onClose, video }: VideoModalProps) => {
 
   if (!video) return null;
 
-  const persons = useMemo(
-    () => video.referenced_persons.map((id) => topPersons.find((person) => person.id === id)).filter(Boolean),
-    [video.referenced_persons]
-  );
+  const persons = video.referenced_persons
+    .map((id) => topPersons.find((person) => person.id === id))
+    .filter(Boolean);
 
   const hasVideoSource = Boolean(video.source_url) && video.source_url !== "#";
 
