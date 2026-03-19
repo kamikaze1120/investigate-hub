@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Plane, ArrowRight } from "lucide-react";
-import { topPersons } from "@/data/mockData";
+import { allIndividuals } from "@/data/allIndividuals";
 
 interface FlightCardProps {
   date: string;
@@ -10,9 +10,11 @@ interface FlightCardProps {
   delay?: number;
 }
 
+const personMap = new Map(allIndividuals.map((person) => [person.id, person.name]));
+
 const FlightCard = ({ date, origin, destination, passengers, delay = 0 }: FlightCardProps) => {
   const passengerNames = passengers
-    .map((id) => topPersons.find((p) => p.id === id)?.name)
+    .map((id) => personMap.get(id) || id)
     .filter(Boolean);
 
   return (
