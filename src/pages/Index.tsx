@@ -85,7 +85,7 @@ const Index = () => {
             </ContentRow>
 
             <ContentRow title="Released Video Evidence" count={releasedVideos.length} accent sectionId="section-videos" exploreAllPath="/videos">
-              {releasedVideos.map((video, i) => (
+              {homeVideoPreview.map((video, i) => (
                 <VideoCard
                   key={video.id}
                   title={video.title}
@@ -93,6 +93,7 @@ const Index = () => {
                   duration={video.duration}
                   release_date={video.release_date}
                   category={video.category}
+                  thumbnail_url={video.thumbnail_url}
                   referenced_persons={video.referenced_persons}
                   onClick={() => setSelectedVideo(video)}
                   delay={i * 0.06}
