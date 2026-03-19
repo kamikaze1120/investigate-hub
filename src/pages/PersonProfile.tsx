@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, FileText, Plane, Clock, Users, ExternalLink, Play } from "lucide-react";
@@ -7,6 +7,8 @@ import VideoModal from "@/components/VideoModal";
 import { topPersons, releasedVideos, type Video } from "@/data/mockData";
 import { allIndividuals } from "@/data/allIndividuals";
 import { getEnrichedProfile } from "@/data/profileEnrichment";
+
+const personNameMap = new Map(allIndividuals.map((person) => [person.id, person.name]));
 
 const PersonProfile = () => {
   const { id } = useParams();
