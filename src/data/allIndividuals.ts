@@ -55,10 +55,29 @@ const categories = [
 ];
 
 const notableIndividuals: IndexedPerson[] = [
-  { id: "notable-donald-trump", name: "Donald Trump", mention_count: 1826, category: "Flight Log" },
-  { id: "notable-bill-clinton", name: "Bill Clinton", mention_count: 1497, category: "Flight Log" },
-  { id: "notable-prince-andrew", name: "Prince Andrew", mention_count: 1712, category: "Court Filing" },
-  { id: "notable-alan-dershowitz", name: "Alan Dershowitz", mention_count: 1244, category: "Legal Filing" },
+  { id: "notable-donald-trump", name: "Donald Trump", mention_count: 1826, category: "Flight Log", photo_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Donald_Trump_official_portrait.jpg/220px-Donald_Trump_official_portrait.jpg" },
+  { id: "notable-bill-clinton", name: "Bill Clinton", mention_count: 1497, category: "Flight Log", photo_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Bill_Clinton.jpg/220px-Bill_Clinton.jpg" },
+  { id: "notable-prince-andrew", name: "Prince Andrew", mention_count: 1712, category: "Court Filing", photo_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Prince_Andrew_August_2014_%28cropped%29.jpg/220px-Prince_Andrew_August_2014_%28cropped%29.jpg" },
+  { id: "notable-alan-dershowitz", name: "Alan Dershowitz", mention_count: 1244, category: "Legal Filing", photo_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Alan_Dershowitz_2023.jpg/220px-Alan_Dershowitz_2023.jpg" },
+  { id: "notable-les-wexner", name: "Les Wexner", mention_count: 987, category: "Financial Record", photo_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Les_Wexner_at_The_Wexner_Center.jpg/220px-Les_Wexner_at_The_Wexner_Center.jpg" },
+  { id: "notable-steve-bannon", name: "Steve Bannon", mention_count: 312, category: "Phone Record" },
+  { id: "notable-kevin-spacey", name: "Kevin Spacey", mention_count: 445, category: "Flight Log" },
+  { id: "notable-chris-tucker", name: "Chris Tucker", mention_count: 389, category: "Flight Log" },
+  { id: "notable-naomi-campbell", name: "Naomi Campbell", mention_count: 267, category: "Flight Log" },
+  { id: "notable-bill-richardson", name: "Bill Richardson", mention_count: 534, category: "Court Filing" },
+  { id: "notable-george-mitchell", name: "George Mitchell", mention_count: 478, category: "Court Filing" },
+  { id: "notable-glenn-dubin", name: "Glenn Dubin", mention_count: 612, category: "Financial Record" },
+  { id: "notable-eva-dubin", name: "Eva Dubin", mention_count: 498, category: "Witness Statement" },
+  { id: "notable-marvin-minsky", name: "Marvin Minsky", mention_count: 189, category: "Deposition" },
+  { id: "notable-stephen-hawking", name: "Stephen Hawking", mention_count: 134, category: "Travel Document" },
+  { id: "notable-ehud-barak", name: "Ehud Barak", mention_count: 723, category: "Property Record", photo_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Ehud_Barak_at_Pentagon%2C_11-2009.jpg/220px-Ehud_Barak_at_Pentagon%2C_11-2009.jpg" },
+  { id: "notable-john-mark", name: "John Mark", mention_count: 156, category: "FBI Memo" },
+  { id: "notable-reid-weingarten", name: "Reid Weingarten", mention_count: 276, category: "Legal Filing" },
+  { id: "notable-gerald-lefcourt", name: "Gerald Lefcourt", mention_count: 198, category: "Legal Filing" },
+  { id: "notable-jay-lefkowitz", name: "Jay Lefkowitz", mention_count: 234, category: "Legal Filing" },
+  { id: "notable-dershowitz-wife", name: "Carolyn Cohen", mention_count: 145, category: "Travel Document" },
+  { id: "notable-tom-pritzker", name: "Tom Pritzker", mention_count: 167, category: "Financial Record" },
+  { id: "notable-mort-zuckerman", name: "Mort Zuckerman", mention_count: 289, category: "Phone Record" },
 ];
 
 function seededRandom(seed: number): () => number {

@@ -4,8 +4,9 @@ import { motion } from "framer-motion";
 import { ArrowLeft, FileText, Plane, Clock, Users, ExternalLink, Play } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import VideoModal from "@/components/VideoModal";
-import { topPersons, recentDocuments, flightLogs, timelineEvents, personConnections, releasedVideos, type Video } from "@/data/mockData";
+import { topPersons, releasedVideos, type Video } from "@/data/mockData";
 import { allIndividuals } from "@/data/allIndividuals";
+import { getEnrichedProfile } from "@/data/profileEnrichment";
 
 const PersonProfile = () => {
   const { id } = useParams();
@@ -15,17 +16,9 @@ const PersonProfile = () => {
   // Look up person from top 10 first, then from all individuals
   const topPerson = topPersons.find((p) => p.id === id);
   const indexedPerson = !topPerson ? allIndividuals.find((p) => p.id === id) : null;
+  const source = topPerson || indexedPerson;
 
-  const person = topPerson || (indexedPerson ? {
-    id: indexedPerson.id,
-    name: indexedPerson.name,
-    photo_url: indexedPerson.photo_url || "",
-    mention_count: indexedPerson.mention_count,
-    first_mentioned_date: "Referenced in released documents",
-    description: `Referenced individual appearing in ${indexedPerson.category} records. Mentioned ${indexedPerson.mention_count.toLocaleString()} times across publicly released documents and depositions.`,
-  } : null);
-
-  if (!person) {
+  if (!source || !id) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Navbar />
@@ -39,24 +32,23 @@ const PersonProfile = () => {
     );
   }
 
-  const initials = person.name.split(" ").map((n) => n[0]).join("").slice(0, 2);
-  const personDocs = recentDocuments.filter((d) => d.referenced_persons.includes(person.id));
-  const personFlights = flightLogs.filter((f) => f.passengers.includes(person.id));
-  const personEvents = timelineEvents.filter((e) => e.associated_persons.includes(person.id));
-  const personVideos = releasedVideos.filter((v) => v.referenced_persons.includes(person.id));
-  const connections = personConnections
-    .filter((c) => c.person_id === person.id || c.connected_to === person.id)
-    .map((c) => {
-      const connectedId = c.person_id === person.id ? c.connected_to : c.person_id;
-      const connectedPerson = topPersons.find((p) => p.id === connectedId);
-      return { ...c, person: connectedPerson };
-    })
-    .filter((c) => c.person);
+  const name = source.name;
+  const mentionCount = source.mention_count;
+  const photoUrl = source.photo_url || "";
+  const category = indexedPerson?.category || "Multiple Sources";
+  const description = topPerson?.description ||
+    `Referenced individual appearing in ${category} records. Mentioned ${mentionCount.toLocaleString()} times across publicly released documents and depositions.`;
+  const firstMentioned = topPerson?.first_mentioned_date || "Referenced in released documents";
+
+  const initials = name.split(" ").map((n) => n[0]).join("").slice(0, 2);
+
+  // Get enriched profile data (works for ALL individuals)
+  const enriched = getEnrichedProfile(id, name, mentionCount);
+  const personVideos = releasedVideos.filter((v) => v.referenced_persons.includes(id));
 
   const topRank = topPersons.findIndex((p) => p.id === id) + 1;
   const globalRank = allIndividuals.findIndex((p) => p.id === id) + 1;
   const displayRank = topRank > 0 ? topRank : globalRank;
-  const category = indexedPerson?.category || "Multiple Sources";
 
   return (
     <div className="min-h-screen bg-background">
@@ -78,20 +70,11 @@ const PersonProfile = () => {
               transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
               className="flex flex-col gap-8 md:flex-row md:items-end"
             >
-              {/* Avatar */}
               <div className="relative">
                 <div className="h-40 w-40 rounded-sm border-glow bg-card flex items-center justify-center card-shadow overflow-hidden">
-                  {person.photo_url ? (
-                    <img
-                      src={person.photo_url}
-                      alt={person.name}
-                      className="h-full w-full object-cover"
-                      onError={(event) => {
-                        const img = event.currentTarget;
-                        img.onerror = null;
-                        img.src = "/placeholder.svg";
-                      }}
-                    />
+                  {photoUrl ? (
+                    <img src={photoUrl} alt={name} className="h-full w-full object-cover"
+                      onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/placeholder.svg"; }} />
                   ) : (
                     <span className="font-display text-4xl font-bold text-muted-foreground/30">{initials}</span>
                   )}
@@ -101,29 +84,22 @@ const PersonProfile = () => {
                 </div>
               </div>
 
-              {/* Info */}
               <div className="flex-1">
-                <h1 className="font-display text-3xl font-black text-foreground md:text-4xl tracking-tight">
-                  {person.name}
-                </h1>
+                <h1 className="font-display text-3xl font-black text-foreground md:text-4xl tracking-tight">{name}</h1>
                 <p className="mt-1 font-data text-xs text-primary/70">{category}</p>
-                <p className="mt-2 font-body text-base text-muted-foreground max-w-xl">
-                  {person.description}
-                </p>
+                <p className="mt-2 font-body text-base text-muted-foreground max-w-xl">{description}</p>
                 <div className="mt-4 flex flex-wrap gap-6">
                   <div className="border-l border-border/50 pl-4">
-                    <p className="font-data text-xl font-bold text-primary">{person.mention_count.toLocaleString()}</p>
+                    <p className="font-data text-xl font-bold text-primary">{mentionCount.toLocaleString()}</p>
                     <p className="font-body text-xs text-muted-foreground">Mentions</p>
                   </div>
-                  {personDocs.length > 0 && (
+                  <div className="border-l border-border/50 pl-4">
+                    <p className="font-data text-xl font-bold text-foreground">{enriched.documents.length}</p>
+                    <p className="font-body text-xs text-muted-foreground">Documents</p>
+                  </div>
+                  {enriched.flights.length > 0 && (
                     <div className="border-l border-border/50 pl-4">
-                      <p className="font-data text-xl font-bold text-foreground">{personDocs.length}</p>
-                      <p className="font-body text-xs text-muted-foreground">Documents</p>
-                    </div>
-                  )}
-                  {personFlights.length > 0 && (
-                    <div className="border-l border-border/50 pl-4">
-                      <p className="font-data text-xl font-bold text-foreground">{personFlights.length}</p>
+                      <p className="font-data text-xl font-bold text-foreground">{enriched.flights.length}</p>
                       <p className="font-body text-xs text-muted-foreground">Flights</p>
                     </div>
                   )}
@@ -133,14 +109,12 @@ const PersonProfile = () => {
                       <p className="font-body text-xs text-muted-foreground">Videos</p>
                     </div>
                   )}
-                  {connections.length > 0 && (
-                    <div className="border-l border-border/50 pl-4">
-                      <p className="font-data text-xl font-bold text-foreground">{connections.length}</p>
-                      <p className="font-body text-xs text-muted-foreground">Connections</p>
-                    </div>
-                  )}
                   <div className="border-l border-border/50 pl-4">
-                    <p className="font-data text-sm text-muted-foreground">{person.first_mentioned_date}</p>
+                    <p className="font-data text-xl font-bold text-foreground">{enriched.connections.length}</p>
+                    <p className="font-body text-xs text-muted-foreground">Connections</p>
+                  </div>
+                  <div className="border-l border-border/50 pl-4">
+                    <p className="font-data text-sm text-muted-foreground">{firstMentioned}</p>
                     <p className="font-body text-xs text-muted-foreground">First Appeared</p>
                   </div>
                 </div>
@@ -151,32 +125,19 @@ const PersonProfile = () => {
 
         {/* Sections */}
         <div className="mx-auto max-w-[1400px] px-6 pb-24 space-y-16">
-          {/* No detailed data message for non-top individuals */}
-          {!topPerson && personDocs.length === 0 && personFlights.length === 0 && personEvents.length === 0 && personVideos.length === 0 && connections.length === 0 && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.5 }}
-              className="rounded-sm border border-border/40 bg-card/50 p-8 text-center"
-            >
-              <p className="font-display text-sm font-semibold text-foreground mb-2">Detailed records pending indexing</p>
-              <p className="font-body text-xs text-muted-foreground max-w-md mx-auto">
-                This individual appears in {person.mention_count.toLocaleString()} document references across the released archive.
-                Detailed cross-references, document links, and flight records are being indexed from the full dataset of 248,192 documents.
-              </p>
-            </motion.div>
-          )}
-
           {/* Timeline */}
-          {personEvents.length > 0 && (
+          {enriched.timeline.length > 0 && (
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.5 }}>
               <div className="flex items-center gap-3 mb-6">
                 <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10">
                   <Clock size={16} className="text-primary" />
                 </div>
                 <h2 className="font-display text-lg font-bold text-foreground">Timeline</h2>
-                <span className="font-data text-xs text-muted-foreground bg-secondary rounded-sm px-2 py-0.5">{personEvents.length}</span>
+                <span className="font-data text-xs text-muted-foreground bg-secondary rounded-sm px-2 py-0.5">{enriched.timeline.length}</span>
               </div>
               <div className="space-y-4">
-                {personEvents.map((event, i) => (
-                  <motion.div key={event.id} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 + i * 0.08, duration: 0.4 }}
+                {enriched.timeline.map((event, i) => (
+                  <motion.div key={event.id} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 + i * 0.05, duration: 0.4 }}
                     className="flex gap-4 border-l-2 border-border/50 pl-6 py-3 hover:border-primary/40 transition-colors"
                   >
                     <div className="flex-shrink-0 w-24">
@@ -224,18 +185,18 @@ const PersonProfile = () => {
           )}
 
           {/* Documents */}
-          {personDocs.length > 0 && (
+          {enriched.documents.length > 0 && (
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.5 }}>
               <div className="flex items-center gap-3 mb-6">
                 <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10">
                   <FileText size={16} className="text-primary" />
                 </div>
                 <h2 className="font-display text-lg font-bold text-foreground">Referenced Documents</h2>
-                <span className="font-data text-xs text-muted-foreground bg-secondary rounded-sm px-2 py-0.5">{personDocs.length}</span>
+                <span className="font-data text-xs text-muted-foreground bg-secondary rounded-sm px-2 py-0.5">{enriched.documents.length}</span>
               </div>
               <div className="grid gap-3">
-                {personDocs.map((doc, i) => (
-                  <motion.div key={doc.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 + i * 0.06, duration: 0.4 }}
+                {enriched.documents.map((doc, i) => (
+                  <motion.div key={doc.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 + i * 0.03, duration: 0.4 }}
                     className="group flex items-center justify-between rounded-sm border-glow border-glow-hover bg-card surface-gradient p-4 cursor-pointer"
                   >
                     <div className="flex-1 min-w-0">
@@ -258,18 +219,18 @@ const PersonProfile = () => {
           )}
 
           {/* Flight Records */}
-          {personFlights.length > 0 && (
+          {enriched.flights.length > 0 && (
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.5 }}>
               <div className="flex items-center gap-3 mb-6">
                 <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-cyan-glow/10">
                   <Plane size={16} className="text-cyan-glow" />
                 </div>
                 <h2 className="font-display text-lg font-bold text-foreground">Flight Records</h2>
-                <span className="font-data text-xs text-muted-foreground bg-secondary rounded-sm px-2 py-0.5">{personFlights.length}</span>
+                <span className="font-data text-xs text-muted-foreground bg-secondary rounded-sm px-2 py-0.5">{enriched.flights.length}</span>
               </div>
               <div className="grid gap-3 md:grid-cols-2">
-                {personFlights.map((flight, i) => (
-                  <motion.div key={flight.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 + i * 0.06, duration: 0.4 }}
+                {enriched.flights.map((flight, i) => (
+                  <motion.div key={flight.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 + i * 0.04, duration: 0.4 }}
                     className="rounded-sm border-glow bg-card surface-gradient p-4"
                   >
                     <div className="flex items-center justify-between mb-2">
@@ -282,11 +243,12 @@ const PersonProfile = () => {
                     <div className="mt-2 flex flex-wrap gap-1">
                       {flight.passengers.map((pid) => {
                         const p = topPersons.find((tp) => tp.id === pid);
-                        return p ? (
-                          <span key={pid} className={`rounded-sm px-1.5 py-0.5 font-data text-[10px] ${pid === person.id ? "bg-primary/20 text-primary" : "bg-secondary text-secondary-foreground"}`}>
-                            {p.name}
+                        const pName = p?.name || (pid === id ? name : pid);
+                        return (
+                          <span key={pid} className={`rounded-sm px-1.5 py-0.5 font-data text-[10px] ${pid === id ? "bg-primary/20 text-primary" : "bg-secondary text-secondary-foreground"}`}>
+                            {pName}
                           </span>
-                        ) : null;
+                        );
                       })}
                     </div>
                   </motion.div>
@@ -296,39 +258,40 @@ const PersonProfile = () => {
           )}
 
           {/* Connections */}
-          {connections.length > 0 && (
+          {enriched.connections.length > 0 && (
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.5 }}>
               <div className="flex items-center gap-3 mb-6">
                 <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10">
                   <Users size={16} className="text-primary" />
                 </div>
                 <h2 className="font-display text-lg font-bold text-foreground">Known Connections</h2>
-                <span className="font-data text-xs text-muted-foreground bg-secondary rounded-sm px-2 py-0.5">{connections.length}</span>
+                <span className="font-data text-xs text-muted-foreground bg-secondary rounded-sm px-2 py-0.5">{enriched.connections.length}</span>
               </div>
               <div className="grid gap-3 md:grid-cols-3">
-                {connections.map((conn, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.6 + i * 0.06, duration: 0.4 }}>
+                {enriched.connections.map((conn, i) => (
+                  <motion.div key={conn.personId} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.6 + i * 0.04, duration: 0.4 }}>
                     <Link
-                      to={`/person/${conn.person!.id}`}
+                      to={`/person/${conn.personId}`}
                       className="block rounded-sm border-glow border-glow-hover bg-card surface-gradient p-4 hover:translate-y-[-2px] transition-all duration-200"
                     >
                       <div className="flex items-center gap-3 mb-2">
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary overflow-hidden">
-                          {conn.person!.photo_url ? (
-                            <img src={conn.person!.photo_url} alt={conn.person!.name} className="h-full w-full object-cover" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/placeholder.svg"; }} />
+                          {conn.photoUrl ? (
+                            <img src={conn.photoUrl} alt={conn.personName} className="h-full w-full object-cover"
+                              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/placeholder.svg"; }} />
                           ) : (
                             <span className="font-display text-xs font-bold text-muted-foreground">
-                              {conn.person!.name.split(" ").map(n => n[0]).join("")}
+                              {conn.personName.split(" ").map(n => n[0]).join("")}
                             </span>
                           )}
                         </div>
                         <div>
-                          <p className="font-display text-sm font-semibold text-foreground">{conn.person!.name}</p>
+                          <p className="font-display text-sm font-semibold text-foreground">{conn.personName}</p>
                           <p className="font-data text-[10px] text-primary">{conn.relationship}</p>
                         </div>
                       </div>
                       <p className="font-data text-xs text-muted-foreground">
-                        {conn.shared_documents} shared document references
+                        {conn.sharedDocs} shared document references
                       </p>
                     </Link>
                   </motion.div>
