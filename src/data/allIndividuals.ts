@@ -119,7 +119,7 @@ function generateAllIndividuals(): IndexedPerson[] {
       id: p.id,
       name: p.name,
       mention_count: p.mention_count,
-      photo_url: p.photo_url || pickPortrait(p.name),
+      photo_url: p.photo_url || buildGeneratedPortrait(p.id, p.name),
       category: "Multiple Sources",
     });
   }
@@ -131,7 +131,7 @@ function generateAllIndividuals(): IndexedPerson[] {
       usedNames.add(notable.name);
       individuals.push({
         ...notable,
-        photo_url: notable.photo_url || pickPortrait(notable.name, notable.mention_count),
+        photo_url: notable.photo_url || buildGeneratedPortrait(notable.id, notable.name),
       });
     }
   }
@@ -149,13 +149,14 @@ function generateAllIndividuals(): IndexedPerson[] {
     const r = rand();
     const mentionCount = Math.max(1, Math.floor(Math.pow(r, 3) * 1500));
     const category = categories[Math.floor(rand() * categories.length)];
+    const generatedId = `gen-${individuals.length}`;
 
     individuals.push({
-      id: `gen-${individuals.length}`,
+      id: generatedId,
       name,
       mention_count: mentionCount,
       category,
-      photo_url: pickPortrait(name, individuals.length),
+      photo_url: buildGeneratedPortrait(generatedId, name),
     });
   }
 
