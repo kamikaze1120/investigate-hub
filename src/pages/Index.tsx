@@ -117,7 +117,7 @@ const Index = () => {
             </ContentRow>
 
             <ContentRow title="Flight Logs" count={flightLogs.length} sectionId="section-flights" exploreAllPath="/flights">
-              {flightLogs.map((flight, i) => (
+              {homeFlightPreview.map((flight, i) => (
                 <FlightCard
                   key={flight.id}
                   date={flight.date}
