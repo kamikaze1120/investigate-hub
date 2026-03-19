@@ -111,7 +111,7 @@ const AllIndividuals = () => {
               {paged.map((person, i) => {
                 const initials = person.name.split(" ").map((n) => n[0]).join("").slice(0, 2);
                 const globalRank = page * PAGE_SIZE + i + 1;
-                const isTop10 = topPersons.some((p) => p.id === person.id);
+                const _isTop10 = topPersons.some((p) => p.id === person.id);
                 return (
                   <motion.div
                     key={person.id}
