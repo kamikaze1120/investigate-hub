@@ -54,12 +54,26 @@ const categories = [
   "Email Record", "Surveillance Log", "Tax Filing", "Bank Record", "Travel Document",
 ];
 
+const portraitPool = [
+  "/photos/jeffrey-epstein.jpg",
+  "/photos/ghislaine-maxwell.jpg",
+  "/photos/jean-luc-brunel.jpg",
+  "/photos/sarah-kellen.jpg",
+  "/photos/nadia-marcinkova.jpg",
+  "/photos/lesley-groff.jpg",
+  "/photos/virginia-giuffre.jpg",
+  "/photos/adriana-ross.jpg",
+  "/photos/emmy-tayler.jpg",
+  "/photos/haley-robson.jpg",
+  "/placeholder.svg",
+];
+
 const notableIndividuals: IndexedPerson[] = [
-  { id: "notable-donald-trump", name: "Donald Trump", mention_count: 1826, category: "Flight Log", photo_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Donald_Trump_official_portrait.jpg/220px-Donald_Trump_official_portrait.jpg" },
-  { id: "notable-bill-clinton", name: "Bill Clinton", mention_count: 1497, category: "Flight Log", photo_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Bill_Clinton.jpg/220px-Bill_Clinton.jpg" },
-  { id: "notable-prince-andrew", name: "Prince Andrew", mention_count: 1712, category: "Court Filing", photo_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Prince_Andrew_August_2014_%28cropped%29.jpg/220px-Prince_Andrew_August_2014_%28cropped%29.jpg" },
-  { id: "notable-alan-dershowitz", name: "Alan Dershowitz", mention_count: 1244, category: "Legal Filing", photo_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Alan_Dershowitz_2023.jpg/220px-Alan_Dershowitz_2023.jpg" },
-  { id: "notable-les-wexner", name: "Les Wexner", mention_count: 987, category: "Financial Record", photo_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Les_Wexner_at_The_Wexner_Center.jpg/220px-Les_Wexner_at_The_Wexner_Center.jpg" },
+  { id: "notable-donald-trump", name: "Donald Trump", mention_count: 1826, category: "Flight Log" },
+  { id: "notable-bill-clinton", name: "Bill Clinton", mention_count: 1497, category: "Flight Log" },
+  { id: "notable-prince-andrew", name: "Prince Andrew", mention_count: 1712, category: "Court Filing" },
+  { id: "notable-alan-dershowitz", name: "Alan Dershowitz", mention_count: 1244, category: "Legal Filing" },
+  { id: "notable-les-wexner", name: "Les Wexner", mention_count: 987, category: "Financial Record" },
   { id: "notable-steve-bannon", name: "Steve Bannon", mention_count: 312, category: "Phone Record" },
   { id: "notable-kevin-spacey", name: "Kevin Spacey", mention_count: 445, category: "Flight Log" },
   { id: "notable-chris-tucker", name: "Chris Tucker", mention_count: 389, category: "Flight Log" },
@@ -70,7 +84,7 @@ const notableIndividuals: IndexedPerson[] = [
   { id: "notable-eva-dubin", name: "Eva Dubin", mention_count: 498, category: "Witness Statement" },
   { id: "notable-marvin-minsky", name: "Marvin Minsky", mention_count: 189, category: "Deposition" },
   { id: "notable-stephen-hawking", name: "Stephen Hawking", mention_count: 134, category: "Travel Document" },
-  { id: "notable-ehud-barak", name: "Ehud Barak", mention_count: 723, category: "Property Record", photo_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Ehud_Barak_at_Pentagon%2C_11-2009.jpg/220px-Ehud_Barak_at_Pentagon%2C_11-2009.jpg" },
+  { id: "notable-ehud-barak", name: "Ehud Barak", mention_count: 723, category: "Property Record" },
   { id: "notable-john-mark", name: "John Mark", mention_count: 156, category: "FBI Memo" },
   { id: "notable-reid-weingarten", name: "Reid Weingarten", mention_count: 276, category: "Legal Filing" },
   { id: "notable-gerald-lefcourt", name: "Gerald Lefcourt", mention_count: 198, category: "Legal Filing" },
@@ -88,6 +102,19 @@ function seededRandom(seed: number): () => number {
   };
 }
 
+function hashName(name: string) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i += 1) {
+    hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+}
+
+function pickPortrait(name: string, salt = 0) {
+  const index = (hashName(name) + salt) % portraitPool.length;
+  return portraitPool[index];
+}
+
 function generateAllIndividuals(): IndexedPerson[] {
   const rand = seededRandom(42);
   const individuals: IndexedPerson[] = [];
@@ -97,7 +124,7 @@ function generateAllIndividuals(): IndexedPerson[] {
       id: p.id,
       name: p.name,
       mention_count: p.mention_count,
-      photo_url: p.photo_url,
+      photo_url: p.photo_url || pickPortrait(p.name),
       category: "Multiple Sources",
     });
   }
@@ -107,7 +134,10 @@ function generateAllIndividuals(): IndexedPerson[] {
   for (const notable of notableIndividuals) {
     if (!usedNames.has(notable.name)) {
       usedNames.add(notable.name);
-      individuals.push(notable);
+      individuals.push({
+        ...notable,
+        photo_url: notable.photo_url || pickPortrait(notable.name, notable.mention_count),
+      });
     }
   }
 
@@ -130,6 +160,7 @@ function generateAllIndividuals(): IndexedPerson[] {
       name,
       mention_count: mentionCount,
       category,
+      photo_url: pickPortrait(name, individuals.length),
     });
   }
 
