@@ -105,6 +105,7 @@ const Index = () => {
                   release_date={doc.release_date}
                   document_type={doc.document_type}
                   summary={doc.summary}
+                  source_url={doc.source_url}
                   delay={i * 0.05}
                 />
               ))}
