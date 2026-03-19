@@ -13,8 +13,13 @@ import ContentRow from "@/components/ContentRow";
 import DisclaimerModal from "@/components/DisclaimerModal";
 import { topPersons, recentDocuments, flightLogs, timelineEvents, releasedVideos, type Video } from "@/data/mockData";
 
+const DISCLAIMER_STORAGE_KEY = "dreadflix_disclaimer_acknowledged_v1";
+
 const Index = () => {
-  const [disclaimerAcknowledged, setDisclaimerAcknowledged] = useState(false);
+  const [disclaimerAcknowledged, setDisclaimerAcknowledged] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem(DISCLAIMER_STORAGE_KEY) === "true";
+  });
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -30,11 +35,18 @@ const Index = () => {
     }
   }, [location.state, disclaimerAcknowledged]);
 
+  const handleDisclaimerAcknowledge = () => {
+    setDisclaimerAcknowledged(true);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(DISCLAIMER_STORAGE_KEY, "true");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <DisclaimerModal
         isOpen={!disclaimerAcknowledged}
-        onAcknowledge={() => setDisclaimerAcknowledged(true)}
+        onAcknowledge={handleDisclaimerAcknowledge}
       />
 
       <VideoModal
@@ -93,6 +105,7 @@ const Index = () => {
                   release_date={doc.release_date}
                   document_type={doc.document_type}
                   summary={doc.summary}
+                  source_url={doc.source_url}
                   delay={i * 0.05}
                 />
               ))}

@@ -59,7 +59,16 @@ const PersonProfile = () => {
               <div className="relative">
                 <div className="h-40 w-40 rounded-sm border-glow bg-card flex items-center justify-center card-shadow overflow-hidden">
                   {person.photo_url ? (
-                    <img src={person.photo_url} alt={person.name} className="h-full w-full object-cover" />
+                    <img
+                      src={person.photo_url}
+                      alt={person.name}
+                      className="h-full w-full object-cover"
+                      onError={(event) => {
+                        const img = event.currentTarget;
+                        img.onerror = null;
+                        img.src = "/placeholder.svg";
+                      }}
+                    />
                   ) : (
                     <span className="font-display text-4xl font-bold text-muted-foreground/30">{initials}</span>
                   )}

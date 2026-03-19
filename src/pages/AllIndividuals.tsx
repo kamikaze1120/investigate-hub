@@ -110,7 +110,7 @@ const AllIndividuals = () => {
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
               {paged.map((person, i) => {
                 const initials = person.name.split(" ").map((n) => n[0]).join("").slice(0, 2);
-                const globalRank = filtered.indexOf(person) + 1;
+                const globalRank = page * PAGE_SIZE + i + 1;
                 const isTop10 = topPersons.some((p) => p.id === person.id);
                 return (
                   <motion.div
@@ -131,7 +131,11 @@ const AllIndividuals = () => {
                             alt={person.name}
                             className="h-full w-full object-cover grayscale-hover"
                             loading="lazy"
-                            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                            onError={(e) => {
+                              const img = e.currentTarget;
+                              img.onerror = null;
+                              img.src = "/placeholder.svg";
+                            }}
                           />
                         ) : (
                           <div className="flex h-12 w-12 items-center justify-center rounded-full border border-foreground/10 bg-secondary">
