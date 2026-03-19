@@ -41,6 +41,7 @@ const PersonProfile = () => {
   const firstMentioned = topPerson?.first_mentioned_date || "Referenced in released documents";
 
   const initials = name.split(" ").map((n) => n[0]).join("").slice(0, 2);
+  const personNameMap = useMemo(() => new Map(allIndividuals.map((person) => [person.id, person.name])), []);
 
   // Get enriched profile data (works for ALL individuals)
   const enriched = getEnrichedProfile(id, name, mentionCount);
