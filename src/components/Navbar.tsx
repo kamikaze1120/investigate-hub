@@ -1,14 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search, X, Menu } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const navItems = [
-  { label: "Archive", sectionId: "section-documents", path: "/documents" },
-  { label: "Individuals", sectionId: "section-individuals", path: "/individuals" },
-  { label: "Timeline", sectionId: "section-timeline", path: "/timeline" },
-  { label: "Videos", sectionId: "section-videos", path: "/videos" },
-  { label: "Connections", sectionId: "section-flights", path: "/flights" },
+  { label: "Archive", path: "/documents" },
+  { label: "Individuals", path: "/individuals" },
+  { label: "Timeline", path: "/timeline" },
+  { label: "Videos", path: "/videos" },
+  { label: "Connections", path: "/flights" },
 ];
 
 const Navbar = () => {
@@ -17,24 +17,17 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
 
-  if (typeof window !== "undefined") {
-    window.addEventListener("scroll", () => {
-      setScrolled(window.scrollY > 20);
-    }, { passive: true });
-  }
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-  const handleNavClick = (item: typeof navItems[0]) => {
+  const handleNavClick = (path: string) => {
     setMobileMenuOpen(false);
-    if (location.pathname === "/") {
-      const el = document.getElementById(item.sectionId);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-        return;
-      }
-    }
-    navigate(item.path);
+    navigate(path);
   };
 
   return (
@@ -51,7 +44,7 @@ const Navbar = () => {
             {navItems.map((item) => (
               <button
                 key={item.label}
-                onClick={() => handleNavClick(item)}
+                onClick={() => handleNavClick(item.path)}
                 className="rounded-sm px-3 py-1.5 font-body text-sm text-muted-foreground transition-colors hover:text-foreground hover:bg-secondary/50"
               >
                 {item.label}
@@ -110,12 +103,12 @@ const Navbar = () => {
             transition={{ duration: 0.3 }}
             className="overflow-hidden glass-surface border-b border-border/30 md:hidden"
           >
-            <div className="px-6 py-4 space-y-1">
+            <div className="space-y-1 px-6 py-4">
               {navItems.map((item) => (
                 <button
                   key={item.label}
-                  onClick={() => handleNavClick(item)}
-                  className="block w-full text-left rounded-sm px-3 py-2 font-body text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  onClick={() => handleNavClick(item.path)}
+                  className="block w-full rounded-sm px-3 py-2 text-left font-body text-sm text-muted-foreground transition-colors hover:bg-secondary/50 hover:text-foreground"
                 >
                   {item.label}
                 </button>
