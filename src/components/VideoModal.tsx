@@ -254,7 +254,7 @@ const VideoModal = ({ isOpen, onClose, video }: VideoModalProps) => {
               <div className="mt-2 flex items-start gap-2 rounded-sm bg-secondary/50 p-3">
                 <AlertTriangle size={14} className="mt-0.5 shrink-0 text-muted-foreground/60" />
                 <p className="font-data text-[10px] leading-relaxed text-muted-foreground/60">
-                  This platform indexes metadata and released media excerpts. Original source archives may include longer files and additional context.
+                  Full-length source material ({video.duration}) available in the original archive. This preview contains the publicly released excerpt.
                 </p>
               </div>
             </div>

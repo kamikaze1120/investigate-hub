@@ -119,8 +119,8 @@ const AllIndividuals = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: Math.min(i * 0.01, 0.5), duration: 0.3 }}
                     whileHover={{ y: -4, scale: 1.02, transition: { duration: 0.2 } }}
-                    onClick={() => isTop10 ? navigate(`/person/${person.id}`) : undefined}
-                    className={`group relative ${isTop10 ? "cursor-pointer" : ""}`}
+                    onClick={() => navigate(`/person/${person.id}`)}
+                    className="group relative cursor-pointer"
                   >
                     <div className="relative aspect-[3/4] overflow-hidden rounded-sm border-glow border-glow-hover card-shadow">
                       {/* Photo or initials */}
