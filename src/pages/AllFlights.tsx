@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Plane, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import { flightLogs, topPersons } from "@/data/mockData";
+import { flightLogs } from "@/data/mockData";
+import { allIndividuals } from "@/data/allIndividuals";
 
 const PAGE_SIZE = 80;
 
@@ -12,7 +13,7 @@ const AllFlights = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
 
-  const personMap = useMemo(() => new Map(topPersons.map((person) => [person.id, person.name])), []);
+  const personMap = useMemo(() => new Map(allIndividuals.map((person) => [person.id, person.name])), []);
 
   const sorted = useMemo(
     () => [...flightLogs].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),

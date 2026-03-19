@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Play, Clock } from "lucide-react";
-import { topPersons } from "@/data/mockData";
+import { allIndividuals } from "@/data/allIndividuals";
 
 interface VideoCardProps {
   title: string;
@@ -22,9 +22,11 @@ const categoryColors: Record<string, string> = {
   Interview: "bg-emerald-500/20 text-emerald-400",
 };
 
+const personMap = new Map(allIndividuals.map((person) => [person.id, person.name]));
+
 const VideoCard = ({ title, description, duration, release_date, category, thumbnail_url, referenced_persons, delay = 0, onClick }: VideoCardProps) => {
   const persons = referenced_persons
-    .map((id) => topPersons.find((p) => p.id === id)?.name)
+    .map((id) => personMap.get(id) || id)
     .filter(Boolean);
 
   return (

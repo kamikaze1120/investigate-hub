@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Search, Play, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import VideoModal from "@/components/VideoModal";
-import { releasedVideos, topPersons, type Video } from "@/data/mockData";
+import { releasedVideos, type Video } from "@/data/mockData";
+import { allIndividuals } from "@/data/allIndividuals";
 
 const categoryColors: Record<string, string> = {
   Surveillance: "bg-primary/20 text-primary",
@@ -85,7 +86,9 @@ const AllVideos = () => {
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {paged.map((video, i) => {
-                const persons = video.referenced_persons.map((id) => topPersons.find((p) => p.id === id)?.name).filter(Boolean);
+                const persons = video.referenced_persons
+                  .map((id) => allIndividuals.find((person) => person.id === id)?.name || id)
+                  .filter(Boolean);
                 return (
                   <motion.div
                     key={video.id}

@@ -54,19 +54,13 @@ const categories = [
   "Email Record", "Surveillance Log", "Tax Filing", "Bank Record", "Travel Document",
 ];
 
-const portraitPool = [
-  "/photos/jeffrey-epstein.jpg",
-  "/photos/ghislaine-maxwell.jpg",
-  "/photos/jean-luc-brunel.jpg",
-  "/photos/sarah-kellen.jpg",
-  "/photos/nadia-marcinkova.jpg",
-  "/photos/lesley-groff.jpg",
-  "/photos/virginia-giuffre.jpg",
-  "/photos/adriana-ross.jpg",
-  "/photos/emmy-tayler.jpg",
-  "/photos/haley-robson.jpg",
-  "/placeholder.svg",
-];
+const avatarStyles = [
+  "personas",
+  "notionists",
+  "adventurer-neutral",
+  "micah",
+  "lorelei-neutral",
+] as const;
 
 const notableIndividuals: IndexedPerson[] = [
   { id: "notable-donald-trump", name: "Donald Trump", mention_count: 1826, category: "Flight Log" },
@@ -102,17 +96,18 @@ function seededRandom(seed: number): () => number {
   };
 }
 
-function hashName(name: string) {
+function hashKey(value: string) {
   let hash = 0;
-  for (let i = 0; i < name.length; i += 1) {
-    hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
+  for (let i = 0; i < value.length; i += 1) {
+    hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
   }
   return hash;
 }
 
-function pickPortrait(name: string, salt = 0) {
-  const index = (hashName(name) + salt) % portraitPool.length;
-  return portraitPool[index];
+function buildGeneratedPortrait(id: string, name: string) {
+  const style = avatarStyles[hashKey(`${id}:${name}`) % avatarStyles.length];
+  const seed = encodeURIComponent(`${id}-${name}`);
+  return `https://api.dicebear.com/9.x/${style}/svg?seed=${seed}&backgroundType=gradientLinear`;
 }
 
 function generateAllIndividuals(): IndexedPerson[] {
@@ -124,7 +119,7 @@ function generateAllIndividuals(): IndexedPerson[] {
       id: p.id,
       name: p.name,
       mention_count: p.mention_count,
-      photo_url: p.photo_url || pickPortrait(p.name),
+      photo_url: p.photo_url || buildGeneratedPortrait(p.id, p.name),
       category: "Multiple Sources",
     });
   }
@@ -136,7 +131,7 @@ function generateAllIndividuals(): IndexedPerson[] {
       usedNames.add(notable.name);
       individuals.push({
         ...notable,
-        photo_url: notable.photo_url || pickPortrait(notable.name, notable.mention_count),
+        photo_url: notable.photo_url || buildGeneratedPortrait(notable.id, notable.name),
       });
     }
   }
@@ -154,13 +149,14 @@ function generateAllIndividuals(): IndexedPerson[] {
     const r = rand();
     const mentionCount = Math.max(1, Math.floor(Math.pow(r, 3) * 1500));
     const category = categories[Math.floor(rand() * categories.length)];
+    const generatedId = `gen-${individuals.length}`;
 
     individuals.push({
-      id: `gen-${individuals.length}`,
+      id: generatedId,
       name,
       mention_count: mentionCount,
       category,
-      photo_url: pickPortrait(name, individuals.length),
+      photo_url: buildGeneratedPortrait(generatedId, name),
     });
   }
 

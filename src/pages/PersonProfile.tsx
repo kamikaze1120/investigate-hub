@@ -8,6 +8,8 @@ import { topPersons, releasedVideos, type Video } from "@/data/mockData";
 import { allIndividuals } from "@/data/allIndividuals";
 import { getEnrichedProfile } from "@/data/profileEnrichment";
 
+const personNameMap = new Map(allIndividuals.map((person) => [person.id, person.name]));
+
 const PersonProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -41,6 +43,7 @@ const PersonProfile = () => {
   const firstMentioned = topPerson?.first_mentioned_date || "Referenced in released documents";
 
   const initials = name.split(" ").map((n) => n[0]).join("").slice(0, 2);
+  const personNames = personNameMap;
 
   // Get enriched profile data (works for ALL individuals)
   const enriched = getEnrichedProfile(id, name, mentionCount);
@@ -242,8 +245,7 @@ const PersonProfile = () => {
                     </p>
                     <div className="mt-2 flex flex-wrap gap-1">
                       {flight.passengers.map((pid) => {
-                        const p = topPersons.find((tp) => tp.id === pid);
-                        const pName = p?.name || (pid === id ? name : pid);
+                        const pName = personNames.get(pid) || (pid === id ? name : pid);
                         return (
                           <span key={pid} className={`rounded-sm px-1.5 py-0.5 font-data text-[10px] ${pid === id ? "bg-primary/20 text-primary" : "bg-secondary text-secondary-foreground"}`}>
                             {pName}
