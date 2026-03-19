@@ -86,7 +86,9 @@ const AllVideos = () => {
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {paged.map((video, i) => {
-                const persons = video.referenced_persons.map((id) => topPersons.find((p) => p.id === id)?.name).filter(Boolean);
+                const persons = video.referenced_persons
+                  .map((id) => allIndividuals.find((person) => person.id === id)?.name || id)
+                  .filter(Boolean);
                 return (
                   <motion.div
                     key={video.id}
