@@ -45,13 +45,63 @@ const flightAirports = [
 
 const videoAssetCount = 36;
 
-const getVideoMediaAsset = (index: number) => {
-  const assetNumber = (index % videoAssetCount) + 1;
+const hashValue = (value: string) => {
+  let hash = 0;
+  for (let i = 0; i < value.length; i += 1) {
+    hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+};
+
+const parseDurationToSeconds = (duration: string) => {
+  const [minutesRaw, secondsRaw] = duration.split(":");
+  const minutes = Number(minutesRaw);
+  const seconds = Number(secondsRaw);
+  if (!Number.isFinite(minutes) || !Number.isFinite(seconds)) return 0;
+  return minutes * 60 + seconds;
+};
+
+const buildVideoThumbnail = (index: number, title: string, category: string) => {
+  const hueA = (index * 37) % 360;
+  const hueB = (hueA + 42) % 360;
+  const entryLabel = `ARCHIVE ENTRY ${pad(index + 1, 4)}`;
+  const safeTitle = title.toUpperCase().slice(0, 40);
+
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'>
+    <defs>
+      <linearGradient id='bg' x1='0%' y1='0%' x2='100%' y2='100%'>
+        <stop offset='0%' stop-color='hsl(${hueA} 72% 18%)'/>
+        <stop offset='100%' stop-color='hsl(${hueB} 78% 10%)'/>
+      </linearGradient>
+      <linearGradient id='overlay' x1='0%' y1='100%' x2='0%' y2='0%'>
+        <stop offset='0%' stop-color='hsl(0 0% 0% / 0.82)'/>
+        <stop offset='100%' stop-color='hsl(0 0% 0% / 0.14)'/>
+      </linearGradient>
+    </defs>
+    <rect width='1280' height='720' fill='url(#bg)'/>
+    <g opacity='0.24'>
+      <circle cx='220' cy='220' r='180' fill='none' stroke='hsl(${hueB} 70% 70% / 0.5)' stroke-width='2'/>
+      <circle cx='1060' cy='540' r='220' fill='none' stroke='hsl(${hueA} 70% 70% / 0.45)' stroke-width='2'/>
+      <path d='M0 560 L1280 140' stroke='hsl(0 0% 100% / 0.13)' stroke-width='3'/>
+    </g>
+    <rect y='0' width='1280' height='720' fill='url(#overlay)'/>
+    <text x='56' y='86' fill='hsl(0 0% 100% / 0.92)' font-family='monospace' font-size='32' letter-spacing='2'>${category.toUpperCase()}</text>
+    <text x='56' y='644' fill='hsl(0 0% 100% / 0.92)' font-family='monospace' font-size='52' font-weight='700'>${safeTitle}</text>
+    <text x='56' y='686' fill='hsl(0 0% 100% / 0.72)' font-family='monospace' font-size='28'>${entryLabel}</text>
+  </svg>`;
+
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+};
+
+const getVideoMediaAsset = (index: number, title: string, category: string, duration: string) => {
+  const assetNumber = ((index * 13 + 7) % videoAssetCount) + 1;
   const suffix = pad(assetNumber, 3);
+  const durationSeconds = parseDurationToSeconds(duration);
+  const startOffset = durationSeconds > 15 ? hashValue(`${index}-${title}`) % Math.max(8, durationSeconds - 12) : 0;
 
   return {
-    source_url: `/videos/clips/evidence-${suffix}.mp4`,
-    thumbnail_url: `/videos/thumbnails/evidence-${suffix}.jpg`,
+    source_url: `/videos/clips/evidence-${suffix}.mp4#t=${startOffset}`,
+    thumbnail_url: buildVideoThumbnail(index, title, category),
   };
 };
 
@@ -67,6 +117,48 @@ export const topPersons: Person[] = [
   { id: "9", name: "Emmy Tayler", photo_url: "/photos/emmy-tayler.jpg", mention_count: 1998, first_mentioned_date: "2002-08-05", description: "Personal assistant referenced in UK-related documents. Born in Oxford, England." },
   { id: "10", name: "Haley Robson", photo_url: "/photos/haley-robson.jpg", mention_count: 1756, first_mentioned_date: "2004-01-20", description: "Referenced in Palm Beach investigation documents. Named in police conclusions alongside Sarah Kellen." },
 ];
+
+const TOTAL_INDEXED_INDIVIDUALS = 21847;
+const notablePersonIds = [
+  "notable-donald-trump",
+  "notable-bill-clinton",
+  "notable-prince-andrew",
+  "notable-alan-dershowitz",
+  "notable-les-wexner",
+  "notable-steve-bannon",
+  "notable-kevin-spacey",
+  "notable-chris-tucker",
+  "notable-naomi-campbell",
+  "notable-bill-richardson",
+  "notable-george-mitchell",
+  "notable-glenn-dubin",
+  "notable-eva-dubin",
+  "notable-marvin-minsky",
+  "notable-stephen-hawking",
+  "notable-ehud-barak",
+  "notable-john-mark",
+  "notable-reid-weingarten",
+  "notable-gerald-lefcourt",
+  "notable-jay-lefkowitz",
+  "notable-dershowitz-wife",
+  "notable-tom-pritzker",
+  "notable-mort-zuckerman",
+];
+
+const generatedPersonStartIndex = topPersons.length + notablePersonIds.length;
+const generatedPersonIds = Array.from(
+  { length: TOTAL_INDEXED_INDIVIDUALS - generatedPersonStartIndex },
+  (_, index) => `gen-${generatedPersonStartIndex + index}`,
+);
+
+const allReferencedPersonIds = [
+  ...topPersons.map((person) => person.id),
+  ...notablePersonIds,
+  ...generatedPersonIds,
+];
+
+const pickReferencedPersonId = (seed: number, salt = 0) =>
+  allReferencedPersonIds[(seed * 37 + salt * 101) % allReferencedPersonIds.length];
 
 export const recentDocuments: Document[] = [
   { id: "d1", title: "Palm Beach Police Department Investigation Report", dataset_number: "DOC-2006-0847", release_date: "2024-01-15", document_type: "Law Enforcement", thumbnail_url: "", source_url: "#", summary: "Initial investigation report filed by Palm Beach PD detailing complaints received in 2005.", referenced_persons: ["1", "4", "6"] },
