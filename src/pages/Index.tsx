@@ -25,6 +25,8 @@ const Index = () => {
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const homeVideoPreview = releasedVideos.slice(0, HOME_VIDEO_PREVIEW_LIMIT);
+  const homeFlightPreview = flightLogs.slice(0, HOME_FLIGHT_PREVIEW_LIMIT);
 
   useEffect(() => {
     const state = location.state as { scrollTo?: string } | null;
