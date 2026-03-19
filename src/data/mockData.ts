@@ -196,16 +196,16 @@ const createGeneratedFlight = (position: number): Flight => {
   const destinationIdx = (originIdx + 3 + (index % 4)) % flightAirports.length;
 
   const passengers = [
-    topPersons[index % topPersons.length].id,
-    topPersons[(index + 3) % topPersons.length].id,
+    pickReferencedPersonId(index, 1),
+    pickReferencedPersonId(index, 2),
   ];
 
   if (index % 3 === 0) {
-    passengers.push(topPersons[(index + 6) % topPersons.length].id);
+    passengers.push(pickReferencedPersonId(index, 3));
   }
 
   if (index % 5 === 0) {
-    passengers.push(topPersons[(index + 8) % topPersons.length].id);
+    passengers.push(pickReferencedPersonId(index, 4));
   }
 
   return {
