@@ -1,20 +1,40 @@
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, FileText, Plane, Clock, Users, ExternalLink, Play } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import VideoModal from "@/components/VideoModal";
 import { topPersons, recentDocuments, flightLogs, timelineEvents, personConnections, releasedVideos, type Video } from "@/data/mockData";
+import { allIndividuals } from "@/data/allIndividuals";
 
 const PersonProfile = () => {
   const { id } = useParams();
-  const person = topPersons.find((p) => p.id === id);
+  const navigate = useNavigate();
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+
+  // Look up person from top 10 first, then from all individuals
+  const topPerson = topPersons.find((p) => p.id === id);
+  const indexedPerson = !topPerson ? allIndividuals.find((p) => p.id === id) : null;
+
+  const person = topPerson || (indexedPerson ? {
+    id: indexedPerson.id,
+    name: indexedPerson.name,
+    photo_url: indexedPerson.photo_url || "",
+    mention_count: indexedPerson.mention_count,
+    first_mentioned_date: "Referenced in released documents",
+    description: `Referenced individual appearing in ${indexedPerson.category} records. Mentioned ${indexedPerson.mention_count.toLocaleString()} times across publicly released documents and depositions.`,
+  } : null);
 
   if (!person) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Person not found.</p>
+        <Navbar />
+        <div className="text-center">
+          <p className="text-muted-foreground mb-4">Person not found.</p>
+          <button onClick={() => navigate("/individuals")} className="font-body text-sm text-primary hover:underline">
+            Browse all individuals
+          </button>
+        </div>
       </div>
     );
   }
@@ -33,7 +53,10 @@ const PersonProfile = () => {
     })
     .filter((c) => c.person);
 
-  const rank = topPersons.findIndex((p) => p.id === id) + 1;
+  const topRank = topPersons.findIndex((p) => p.id === id) + 1;
+  const globalRank = allIndividuals.findIndex((p) => p.id === id) + 1;
+  const displayRank = topRank > 0 ? topRank : globalRank;
+  const category = indexedPerson?.category || "Multiple Sources";
 
   return (
     <div className="min-h-screen bg-background">
@@ -44,9 +67,9 @@ const PersonProfile = () => {
         <div className="relative overflow-hidden">
           <div className="absolute inset-0 red-glow opacity-50 pointer-events-none" />
           <div className="mx-auto max-w-[1400px] px-6 py-16">
-            <Link to="/" className="inline-flex items-center gap-2 font-body text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">
+            <Link to="/individuals" className="inline-flex items-center gap-2 font-body text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">
               <ArrowLeft size={14} />
-              Back to Archive
+              Back to Individuals
             </Link>
 
             <motion.div
@@ -73,11 +96,9 @@ const PersonProfile = () => {
                     <span className="font-display text-4xl font-bold text-muted-foreground/30">{initials}</span>
                   )}
                 </div>
-                {rank <= 10 && (
-                  <div className="absolute -top-2 -right-2 flex h-8 w-8 items-center justify-center rounded-sm bg-primary">
-                    <span className="font-data text-xs font-bold text-primary-foreground">#{rank}</span>
-                  </div>
-                )}
+                <div className="absolute -top-2 -right-2 flex h-8 w-auto min-w-8 items-center justify-center rounded-sm bg-primary px-1.5">
+                  <span className="font-data text-xs font-bold text-primary-foreground">#{displayRank.toLocaleString()}</span>
+                </div>
               </div>
 
               {/* Info */}
@@ -85,6 +106,7 @@ const PersonProfile = () => {
                 <h1 className="font-display text-3xl font-black text-foreground md:text-4xl tracking-tight">
                   {person.name}
                 </h1>
+                <p className="mt-1 font-data text-xs text-primary/70">{category}</p>
                 <p className="mt-2 font-body text-base text-muted-foreground max-w-xl">
                   {person.description}
                 </p>
@@ -93,22 +115,30 @@ const PersonProfile = () => {
                     <p className="font-data text-xl font-bold text-primary">{person.mention_count.toLocaleString()}</p>
                     <p className="font-body text-xs text-muted-foreground">Mentions</p>
                   </div>
-                  <div className="border-l border-border/50 pl-4">
-                    <p className="font-data text-xl font-bold text-foreground">{personDocs.length}</p>
-                    <p className="font-body text-xs text-muted-foreground">Documents</p>
-                  </div>
-                  <div className="border-l border-border/50 pl-4">
-                    <p className="font-data text-xl font-bold text-foreground">{personFlights.length}</p>
-                    <p className="font-body text-xs text-muted-foreground">Flights</p>
-                  </div>
-                  <div className="border-l border-border/50 pl-4">
-                    <p className="font-data text-xl font-bold text-foreground">{personVideos.length}</p>
-                    <p className="font-body text-xs text-muted-foreground">Videos</p>
-                  </div>
-                  <div className="border-l border-border/50 pl-4">
-                    <p className="font-data text-xl font-bold text-foreground">{connections.length}</p>
-                    <p className="font-body text-xs text-muted-foreground">Connections</p>
-                  </div>
+                  {personDocs.length > 0 && (
+                    <div className="border-l border-border/50 pl-4">
+                      <p className="font-data text-xl font-bold text-foreground">{personDocs.length}</p>
+                      <p className="font-body text-xs text-muted-foreground">Documents</p>
+                    </div>
+                  )}
+                  {personFlights.length > 0 && (
+                    <div className="border-l border-border/50 pl-4">
+                      <p className="font-data text-xl font-bold text-foreground">{personFlights.length}</p>
+                      <p className="font-body text-xs text-muted-foreground">Flights</p>
+                    </div>
+                  )}
+                  {personVideos.length > 0 && (
+                    <div className="border-l border-border/50 pl-4">
+                      <p className="font-data text-xl font-bold text-foreground">{personVideos.length}</p>
+                      <p className="font-body text-xs text-muted-foreground">Videos</p>
+                    </div>
+                  )}
+                  {connections.length > 0 && (
+                    <div className="border-l border-border/50 pl-4">
+                      <p className="font-data text-xl font-bold text-foreground">{connections.length}</p>
+                      <p className="font-body text-xs text-muted-foreground">Connections</p>
+                    </div>
+                  )}
                   <div className="border-l border-border/50 pl-4">
                     <p className="font-data text-sm text-muted-foreground">{person.first_mentioned_date}</p>
                     <p className="font-body text-xs text-muted-foreground">First Appeared</p>
@@ -121,6 +151,19 @@ const PersonProfile = () => {
 
         {/* Sections */}
         <div className="mx-auto max-w-[1400px] px-6 pb-24 space-y-16">
+          {/* No detailed data message for non-top individuals */}
+          {!topPerson && personDocs.length === 0 && personFlights.length === 0 && personEvents.length === 0 && personVideos.length === 0 && connections.length === 0 && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.5 }}
+              className="rounded-sm border border-border/40 bg-card/50 p-8 text-center"
+            >
+              <p className="font-display text-sm font-semibold text-foreground mb-2">Detailed records pending indexing</p>
+              <p className="font-body text-xs text-muted-foreground max-w-md mx-auto">
+                This individual appears in {person.mention_count.toLocaleString()} document references across the released archive.
+                Detailed cross-references, document links, and flight records are being indexed from the full dataset of 248,192 documents.
+              </p>
+            </motion.div>
+          )}
+
           {/* Timeline */}
           {personEvents.length > 0 && (
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.5 }}>
@@ -272,7 +315,7 @@ const PersonProfile = () => {
                       <div className="flex items-center gap-3 mb-2">
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary overflow-hidden">
                           {conn.person!.photo_url ? (
-                            <img src={conn.person!.photo_url} alt={conn.person!.name} className="h-full w-full object-cover" />
+                            <img src={conn.person!.photo_url} alt={conn.person!.name} className="h-full w-full object-cover" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/placeholder.svg"; }} />
                           ) : (
                             <span className="font-display text-xs font-bold text-muted-foreground">
                               {conn.person!.name.split(" ").map(n => n[0]).join("")}
@@ -294,6 +337,18 @@ const PersonProfile = () => {
             </motion.section>
           )}
         </div>
+
+        <footer className="border-t border-border/30 mt-8">
+          <div className="mx-auto max-w-[1400px] px-6 py-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1">
+                <span className="font-display text-lg font-black text-primary">DREAD</span>
+                <span className="font-display text-lg font-black text-foreground">FLIX</span>
+              </div>
+              <p className="font-data text-[10px] text-muted-foreground/40">© {new Date().getFullYear()} DREADFLIX</p>
+            </div>
+          </div>
+        </footer>
       </main>
     </div>
   );
