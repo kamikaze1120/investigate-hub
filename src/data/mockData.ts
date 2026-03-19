@@ -7,6 +7,7 @@ export interface Video {
   duration: string;
   release_date: string;
   source_url: string;
+  thumbnail_url: string;
   category: string;
   referenced_persons: string[];
 }
@@ -17,6 +18,42 @@ export interface PersonConnection {
   shared_documents: number;
   relationship: string;
 }
+
+const pad = (value: number, size = 2) => value.toString().padStart(size, "0");
+
+const buildDate = (index: number, startYear: number, spanYears: number) => {
+  const year = startYear + (index % spanYears);
+  const month = (index % 12) + 1;
+  const day = ((index * 3) % 28) + 1;
+  return `${year}-${pad(month)}-${pad(day)}`;
+};
+
+const flightAirports = [
+  "Teterboro, NJ",
+  "Palm Beach, FL",
+  "St. Thomas, USVI",
+  "Paris, France",
+  "London, UK",
+  "Santa Fe, NM",
+  "Miami, FL",
+  "JFK, New York",
+  "Los Angeles, CA",
+  "Columbus, OH",
+  "Scottsdale, AZ",
+  "Nantucket, MA",
+];
+
+const videoAssetCount = 36;
+
+const getVideoMediaAsset = (index: number) => {
+  const assetNumber = (index % videoAssetCount) + 1;
+  const suffix = pad(assetNumber, 3);
+
+  return {
+    source_url: `/videos/clips/evidence-${suffix}.mp4`,
+    thumbnail_url: `/videos/thumbnails/evidence-${suffix}.jpg`,
+  };
+};
 
 export const topPersons: Person[] = [
   { id: "1", name: "Jeffrey Epstein", photo_url: "/photos/jeffrey-epstein.jpg", mention_count: 14892, first_mentioned_date: "1998-03-15", description: "Central figure in investigation. Financier and convicted offender." },
@@ -46,7 +83,7 @@ export const recentDocuments: Document[] = [
   { id: "d12", title: "Civil Complaint — Jane Doe v. Epstein", dataset_number: "DOC-2009-2203", release_date: "2023-12-06", document_type: "Legal Filing", thumbnail_url: "", source_url: "#", summary: "Civil complaint filed under pseudonym detailing allegations from 2001-2004.", referenced_persons: ["1", "2", "4"] },
 ];
 
-export const flightLogs: Flight[] = [
+const curatedFlightLogs: Flight[] = [
   { id: "f1", date: "2002-03-12", origin: "Teterboro, NJ", destination: "St. Thomas, USVI", document_reference: "DOC-2009-1203", passengers: ["1", "2", "5"] },
   { id: "f2", date: "2002-06-18", origin: "St. Thomas, USVI", destination: "Paris, France", document_reference: "DOC-2009-1203", passengers: ["1", "3"] },
   { id: "f3", date: "2003-01-05", origin: "Palm Beach, FL", destination: "Teterboro, NJ", document_reference: "DOC-2009-1203", passengers: ["1", "2", "4", "8"] },
@@ -58,6 +95,41 @@ export const flightLogs: Flight[] = [
   { id: "f9", date: "2005-03-19", origin: "St. Thomas, USVI", destination: "Palm Beach, FL", document_reference: "DOC-2009-1203", passengers: ["1", "2", "8"] },
   { id: "f10", date: "2003-06-07", origin: "Paris, France", destination: "London, UK", document_reference: "DOC-2009-1203", passengers: ["1", "3", "9"] },
 ];
+
+export const TOTAL_FLIGHT_LOGS = 1826;
+
+const createGeneratedFlight = (position: number): Flight => {
+  const index = curatedFlightLogs.length + position;
+  const originIdx = index % flightAirports.length;
+  const destinationIdx = (originIdx + 3 + (index % 4)) % flightAirports.length;
+
+  const passengers = [
+    topPersons[index % topPersons.length].id,
+    topPersons[(index + 3) % topPersons.length].id,
+  ];
+
+  if (index % 3 === 0) {
+    passengers.push(topPersons[(index + 6) % topPersons.length].id);
+  }
+
+  if (index % 5 === 0) {
+    passengers.push(topPersons[(index + 8) % topPersons.length].id);
+  }
+
+  return {
+    id: `f${index + 1}`,
+    date: buildDate(index, 1998, 16),
+    origin: flightAirports[originIdx],
+    destination: flightAirports[destinationIdx],
+    document_reference: `DOC-${2000 + (index % 24)}-${pad(1200 + index, 4)}`,
+    passengers: Array.from(new Set(passengers)),
+  };
+};
+
+export const flightLogs: Flight[] = [...curatedFlightLogs];
+for (let i = 0; i < TOTAL_FLIGHT_LOGS - curatedFlightLogs.length; i += 1) {
+  flightLogs.push(createGeneratedFlight(i));
+}
 
 export const timelineEvents: TimelineEvent[] = [
   { id: "t1", date: "2005-03-15", event_title: "Palm Beach PD Opens Investigation", description: "Local police begin investigation following initial complaint.", associated_persons: ["1"] },
@@ -74,18 +146,84 @@ export const timelineEvents: TimelineEvent[] = [
   { id: "t12", date: "2022-02-19", event_title: "Brunel Found Dead", description: "Found dead in Paris prison cell while awaiting trial.", associated_persons: ["3"] },
 ];
 
-export const releasedVideos: Video[] = [
-  { id: "v1", title: "Surveillance Footage — Palm Beach Residence", description: "Security camera recordings from the Palm Beach property obtained during the 2005 investigation by Palm Beach PD.", duration: "12:34", release_date: "2024-01-18", source_url: "/videos/evidence-extended.mp4", category: "Surveillance", referenced_persons: ["1", "4"] },
-  { id: "v2", title: "Deposition Video — Virginia Giuffre (2016)", description: "Video recording of sworn deposition testimony in the Giuffre v. Maxwell civil case.", duration: "2:15:08", release_date: "2024-01-14", source_url: "/videos/evidence-extended.mp4", category: "Legal Proceeding", referenced_persons: ["7"] },
-  { id: "v3", title: "News Conference — SDNY Indictment (2019)", description: "Press conference announcing federal indictment by the Southern District of New York.", duration: "28:41", release_date: "2024-01-10", source_url: "/videos/evidence-reel.mp4", category: "Press Conference", referenced_persons: ["1"] },
-  { id: "v4", title: "Courtroom Footage — Maxwell Trial Day 1", description: "Public courtroom video from the opening day of the Ghislaine Maxwell federal trial.", duration: "1:42:19", release_date: "2024-01-06", source_url: "/videos/evidence-extended.mp4", category: "Legal Proceeding", referenced_persons: ["2"] },
-  { id: "v5", title: "FBI Evidence Presentation — Grand Jury", description: "Compilation of visual evidence presented during grand jury proceedings.", duration: "45:22", release_date: "2023-12-30", source_url: "/videos/evidence-reel.mp4", category: "Evidence", referenced_persons: ["1", "2", "3"] },
-  { id: "v6", title: "Aerial Footage — Little St. James Island", description: "Drone and aerial footage of the private island property in the U.S. Virgin Islands.", duration: "8:17", release_date: "2023-12-25", source_url: "/videos/evidence-extended.mp4", category: "Evidence", referenced_persons: ["1"] },
-  { id: "v7", title: "Interview Footage — Palm Beach Detective", description: "Recorded interview with lead detective from the Palm Beach Police Department investigation.", duration: "34:56", release_date: "2023-12-20", source_url: "/videos/evidence-reel.mp4", category: "Interview", referenced_persons: ["1", "6"] },
-  { id: "v8", title: "Deposition Video — Ghislaine Maxwell (2016)", description: "Sealed video deposition released by federal court order from the civil defamation case.", duration: "3:08:44", release_date: "2023-12-15", source_url: "/videos/evidence-extended.mp4", category: "Legal Proceeding", referenced_persons: ["2"] },
-  { id: "v9", title: "Surveillance — New York Townhouse Entrance", description: "Security footage from the entrance of the East 71st Street property showing visitors.", duration: "6:42", release_date: "2023-12-10", source_url: "/videos/evidence-reel.mp4", category: "Surveillance", referenced_persons: ["1", "2", "4"] },
-  { id: "v10", title: "Witness Interview — Haley Robson", description: "Recorded law enforcement interview during the Palm Beach County investigation.", duration: "1:12:30", release_date: "2023-12-05", source_url: "/videos/evidence-extended.mp4", category: "Interview", referenced_persons: ["10", "1"] },
+const curatedVideoRecords: Omit<Video, "id" | "source_url" | "thumbnail_url">[] = [
+  { title: "Surveillance Footage — Palm Beach Residence", description: "Security camera recordings from the Palm Beach property obtained during the 2005 investigation by Palm Beach PD.", duration: "06:11", release_date: "2024-01-18", category: "Surveillance", referenced_persons: ["1", "4"] },
+  { title: "Deposition Video — Virginia Giuffre (2016)", description: "Video recording of sworn deposition testimony in the Giuffre v. Maxwell civil case.", duration: "05:24", release_date: "2024-01-14", category: "Legal Proceeding", referenced_persons: ["7"] },
+  { title: "News Conference — SDNY Indictment (2019)", description: "Press conference announcing federal indictment by the Southern District of New York.", duration: "05:58", release_date: "2024-01-10", category: "Press Conference", referenced_persons: ["1"] },
+  { title: "Courtroom Footage — Maxwell Trial Day 1", description: "Public courtroom video from the opening day of the Ghislaine Maxwell federal trial.", duration: "06:20", release_date: "2024-01-06", category: "Legal Proceeding", referenced_persons: ["2"] },
+  { title: "FBI Evidence Presentation — Grand Jury", description: "Compilation of visual evidence presented during grand jury proceedings.", duration: "06:03", release_date: "2023-12-30", category: "Evidence", referenced_persons: ["1", "2", "3"] },
+  { title: "Aerial Footage — Little St. James Island", description: "Drone and aerial footage of the private island property in the U.S. Virgin Islands.", duration: "05:47", release_date: "2023-12-25", category: "Evidence", referenced_persons: ["1"] },
+  { title: "Interview Footage — Palm Beach Detective", description: "Recorded interview with lead detective from the Palm Beach Police Department investigation.", duration: "05:38", release_date: "2023-12-20", category: "Interview", referenced_persons: ["1", "6"] },
+  { title: "Deposition Video — Ghislaine Maxwell (2016)", description: "Sealed video deposition released by federal court order from the civil defamation case.", duration: "06:07", release_date: "2023-12-15", category: "Legal Proceeding", referenced_persons: ["2"] },
+  { title: "Surveillance — New York Townhouse Entrance", description: "Security footage from the entrance of the East 71st Street property showing visitors.", duration: "05:33", release_date: "2023-12-10", category: "Surveillance", referenced_persons: ["1", "2", "4"] },
+  { title: "Witness Interview — Haley Robson", description: "Recorded law enforcement interview during the Palm Beach County investigation.", duration: "05:15", release_date: "2023-12-05", category: "Interview", referenced_persons: ["10", "1"] },
 ];
+
+export const TOTAL_RELEASED_VIDEOS = 1826;
+
+const generatedVideoCategories = ["Surveillance", "Legal Proceeding", "Press Conference", "Evidence", "Interview"];
+const generatedVideoTitlePrefixes = [
+  "Archive Camera Segment",
+  "Court Submission Reel",
+  "Evidence Chain Clip",
+  "Witness Interview Segment",
+  "Property Surveillance Excerpt",
+  "Flight Terminal Recording",
+  "Case Briefing Capture",
+  "Deposition Extract",
+];
+const generatedVideoDescriptionTemplates = [
+  "Released excerpt from public archive material, indexed and cross-referenced with document metadata.",
+  "Segment aligned with released filings and timeline events for investigative review.",
+  "Video excerpt preserved with source-chain metadata and indexed person references.",
+  "Cataloged visual material linked to corresponding records and archived references.",
+  "Reference clip attached to released evidence packet and person-index mappings.",
+];
+const generatedVideoDurations = ["04:58", "05:12", "05:39", "05:44", "06:03", "06:25", "06:42"];
+
+const buildGeneratedVideo = (position: number): Video => {
+  const index = curatedVideoRecords.length + position;
+  const category = generatedVideoCategories[index % generatedVideoCategories.length];
+  const titlePrefix = generatedVideoTitlePrefixes[index % generatedVideoTitlePrefixes.length];
+  const description = generatedVideoDescriptionTemplates[index % generatedVideoDescriptionTemplates.length];
+  const media = getVideoMediaAsset(index);
+
+  const referenced = [
+    topPersons[index % topPersons.length].id,
+    topPersons[(index + 2) % topPersons.length].id,
+  ];
+
+  if (index % 4 === 0) {
+    referenced.push(topPersons[(index + 5) % topPersons.length].id);
+  }
+
+  return {
+    id: `v${index + 1}`,
+    title: `${titlePrefix} — Archive Entry ${pad(index + 1, 4)}`,
+    description,
+    duration: generatedVideoDurations[index % generatedVideoDurations.length],
+    release_date: buildDate(index, 2020, 5),
+    source_url: media.source_url,
+    thumbnail_url: media.thumbnail_url,
+    category,
+    referenced_persons: Array.from(new Set(referenced)),
+  };
+};
+
+const curatedVideos: Video[] = curatedVideoRecords.map((record, index) => {
+  const media = getVideoMediaAsset(index);
+  return {
+    id: `v${index + 1}`,
+    ...record,
+    source_url: media.source_url,
+    thumbnail_url: media.thumbnail_url,
+  };
+});
+
+export const releasedVideos: Video[] = [...curatedVideos];
+for (let i = 0; i < TOTAL_RELEASED_VIDEOS - curatedVideos.length; i += 1) {
+  releasedVideos.push(buildGeneratedVideo(i));
+}
 
 export const personConnections: PersonConnection[] = [
   { person_id: "1", connected_to: "2", shared_documents: 847, relationship: "Associate" },

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Play, Pause, Calendar, Tag, Users, Volume2, VolumeX, Maximize, AlertTriangle } from "lucide-react";
 import { topPersons } from "@/data/mockData";
+import { allIndividuals } from "@/data/allIndividuals";
 
 interface VideoModalProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface VideoModalProps {
     duration: string;
     release_date: string;
     source_url: string;
+    thumbnail_url: string;
     category: string;
     referenced_persons: string[];
   } | null;
@@ -68,7 +70,7 @@ const VideoModal = ({ isOpen, onClose, video }: VideoModalProps) => {
   if (!video) return null;
 
   const persons = video.referenced_persons
-    .map((id) => topPersons.find((person) => person.id === id))
+    .map((id) => topPersons.find((person) => person.id === id) ?? allIndividuals.find((person) => person.id === id))
     .filter(Boolean);
 
   const hasVideoSource = Boolean(video.source_url) && video.source_url !== "#";
@@ -149,6 +151,7 @@ const VideoModal = ({ isOpen, onClose, video }: VideoModalProps) => {
                 <video
                   ref={videoRef}
                   src={video.source_url}
+                  poster={video.thumbnail_url || "/placeholder.svg"}
                   className="h-full w-full bg-background object-contain"
                   preload="metadata"
                   playsInline
@@ -163,8 +166,21 @@ const VideoModal = ({ isOpen, onClose, video }: VideoModalProps) => {
                   }}
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center bg-muted/20 px-6 text-center">
-                  <p className="font-body text-sm text-muted-foreground">Video source unavailable for this record.</p>
+                <div className="relative h-full w-full">
+                  <img
+                    src={video.thumbnail_url || "/placeholder.svg"}
+                    alt={`${video.title} preview`}
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                    onError={(event) => {
+                      const img = event.currentTarget;
+                      img.onerror = null;
+                      img.src = "/placeholder.svg";
+                    }}
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center bg-background/60 px-6 text-center">
+                    <p className="font-body text-sm text-muted-foreground">Video source unavailable for this record.</p>
+                  </div>
                 </div>
               )}
 
@@ -244,7 +260,9 @@ const VideoModal = ({ isOpen, onClose, video }: VideoModalProps) => {
                           }}
                         />
                         <span className="font-data text-xs text-secondary-foreground">{person!.name}</span>
-                        <span className="font-data text-[10px] text-primary">{person!.mention_count.toLocaleString()}</span>
+                        {"mention_count" in person! && (
+                          <span className="font-data text-[10px] text-primary">{person!.mention_count.toLocaleString()}</span>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -254,7 +272,7 @@ const VideoModal = ({ isOpen, onClose, video }: VideoModalProps) => {
               <div className="mt-2 flex items-start gap-2 rounded-sm bg-secondary/50 p-3">
                 <AlertTriangle size={14} className="mt-0.5 shrink-0 text-muted-foreground/60" />
                 <p className="font-data text-[10px] leading-relaxed text-muted-foreground/60">
-                  Full-length source material ({video.duration}) available in the original archive. This preview contains the publicly released excerpt.
+                  Full-length source material is available in the original archive. This preview contains indexed publicly released excerpts.
                 </p>
               </div>
             </div>

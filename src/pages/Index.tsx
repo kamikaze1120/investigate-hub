@@ -14,6 +14,8 @@ import DisclaimerModal from "@/components/DisclaimerModal";
 import { topPersons, recentDocuments, flightLogs, timelineEvents, releasedVideos, type Video } from "@/data/mockData";
 
 const DISCLAIMER_STORAGE_KEY = "dreadflix_disclaimer_acknowledged_v1";
+const HOME_VIDEO_PREVIEW_LIMIT = 12;
+const HOME_FLIGHT_PREVIEW_LIMIT = 16;
 
 const Index = () => {
   const [disclaimerAcknowledged, setDisclaimerAcknowledged] = useState<boolean>(() => {
@@ -23,6 +25,8 @@ const Index = () => {
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const homeVideoPreview = releasedVideos.slice(0, HOME_VIDEO_PREVIEW_LIMIT);
+  const homeFlightPreview = flightLogs.slice(0, HOME_FLIGHT_PREVIEW_LIMIT);
 
   useEffect(() => {
     const state = location.state as { scrollTo?: string } | null;
@@ -81,7 +85,7 @@ const Index = () => {
             </ContentRow>
 
             <ContentRow title="Released Video Evidence" count={releasedVideos.length} accent sectionId="section-videos" exploreAllPath="/videos">
-              {releasedVideos.map((video, i) => (
+              {homeVideoPreview.map((video, i) => (
                 <VideoCard
                   key={video.id}
                   title={video.title}
@@ -89,6 +93,7 @@ const Index = () => {
                   duration={video.duration}
                   release_date={video.release_date}
                   category={video.category}
+                  thumbnail_url={video.thumbnail_url}
                   referenced_persons={video.referenced_persons}
                   onClick={() => setSelectedVideo(video)}
                   delay={i * 0.06}
@@ -112,7 +117,7 @@ const Index = () => {
             </ContentRow>
 
             <ContentRow title="Flight Logs" count={flightLogs.length} sectionId="section-flights" exploreAllPath="/flights">
-              {flightLogs.map((flight, i) => (
+              {homeFlightPreview.map((flight, i) => (
                 <FlightCard
                   key={flight.id}
                   date={flight.date}
