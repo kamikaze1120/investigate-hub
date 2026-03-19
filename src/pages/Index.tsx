@@ -14,6 +14,8 @@ import DisclaimerModal from "@/components/DisclaimerModal";
 import { topPersons, recentDocuments, flightLogs, timelineEvents, releasedVideos, type Video } from "@/data/mockData";
 
 const DISCLAIMER_STORAGE_KEY = "dreadflix_disclaimer_acknowledged_v1";
+const HOME_VIDEO_PREVIEW_LIMIT = 12;
+const HOME_FLIGHT_PREVIEW_LIMIT = 16;
 
 const Index = () => {
   const [disclaimerAcknowledged, setDisclaimerAcknowledged] = useState<boolean>(() => {
