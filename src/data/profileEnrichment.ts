@@ -8,6 +8,7 @@
 import type { Document, TimelineEvent, Flight } from "./types";
 import { topPersons, recentDocuments, flightLogs, timelineEvents, personConnections } from "./mockData";
 import { allIndividuals } from "./allIndividuals";
+import { buildDocumentSourceUrl } from "@/lib/archiveLinks";
 
 // ── Seeded PRNG ──────────────────────────────────────────────────────────────
 
@@ -159,7 +160,7 @@ export function getEnrichedProfile(personId: string, personName: string, mention
       release_date: generateDate(rand, 2023, 2024),
       document_type: docType,
       thumbnail_url: "",
-      source_url: "#",
+      source_url: buildDocumentSourceUrl(generateDocNumber(rand)),
       summary: `Document referencing ${personName} obtained from ${jurisdiction}. Part of ${mentionCount.toLocaleString()} total indexed references.`,
       referenced_persons: [personId],
     });
