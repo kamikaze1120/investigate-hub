@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Plane, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
@@ -10,8 +10,16 @@ const PAGE_SIZE = 80;
 
 const AllFlights = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const requestedSearch = params.get("search") || "";
+    setSearch(requestedSearch);
+    setPage(0);
+  }, [location.search]);
 
   const personMap = useMemo(() => new Map(allIndividuals.map((person) => [person.id, person.name])), []);
 
