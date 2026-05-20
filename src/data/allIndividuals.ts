@@ -56,7 +56,7 @@ const categories = [
 ];
 
 const notableIndividuals: IndexedPerson[] = [
-  { id: "notable-donald-trump", name: "Donald Trump", mention_count: 1826, category: "Flight Log" },
+  { id: "notable-donald-trump", name: "Donald Trump", mention_count: 1742, category: "Flight Log" },
   { id: "notable-bill-clinton", name: "Bill Clinton", mention_count: 1497, category: "Flight Log" },
   { id: "notable-prince-andrew", name: "Prince Andrew", mention_count: 1712, category: "Court Filing" },
   { id: "notable-alan-dershowitz", name: "Alan Dershowitz", mention_count: 1244, category: "Legal Filing" },
@@ -87,14 +87,6 @@ function seededRandom(seed: number): () => number {
     s = (s * 16807 + 0) % 2147483647;
     return s / 2147483647;
   };
-}
-
-function hashKey(value: string) {
-  let hash = 0;
-  for (let i = 0; i < value.length; i += 1) {
-    hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
-  }
-  return hash;
 }
 
 function generateAllIndividuals(): IndexedPerson[] {
