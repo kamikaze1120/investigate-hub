@@ -1,6 +1,7 @@
 // Procedurally generated list of 21,847 individuals referenced across all documents
 
 import { topPersons } from "./mockData";
+import { getPersonPhotoUrl } from "@/lib/personMedia";
 
 export interface IndexedPerson {
   id: string;
@@ -54,16 +55,8 @@ const categories = [
   "Email Record", "Surveillance Log", "Tax Filing", "Bank Record", "Travel Document",
 ];
 
-const avatarStyles = [
-  "personas",
-  "notionists",
-  "adventurer-neutral",
-  "micah",
-  "lorelei-neutral",
-] as const;
-
 const notableIndividuals: IndexedPerson[] = [
-  { id: "notable-donald-trump", name: "Donald Trump", mention_count: 1826, category: "Flight Log" },
+  { id: "notable-donald-trump", name: "Donald Trump", mention_count: 1742, category: "Flight Log" },
   { id: "notable-bill-clinton", name: "Bill Clinton", mention_count: 1497, category: "Flight Log" },
   { id: "notable-prince-andrew", name: "Prince Andrew", mention_count: 1712, category: "Court Filing" },
   { id: "notable-alan-dershowitz", name: "Alan Dershowitz", mention_count: 1244, category: "Legal Filing" },
@@ -96,20 +89,6 @@ function seededRandom(seed: number): () => number {
   };
 }
 
-function hashKey(value: string) {
-  let hash = 0;
-  for (let i = 0; i < value.length; i += 1) {
-    hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
-  }
-  return hash;
-}
-
-function buildGeneratedPortrait(id: string, name: string) {
-  const style = avatarStyles[hashKey(`${id}:${name}`) % avatarStyles.length];
-  const seed = encodeURIComponent(`${id}-${name}`);
-  return `https://api.dicebear.com/9.x/${style}/svg?seed=${seed}&backgroundType=gradientLinear`;
-}
-
 function generateAllIndividuals(): IndexedPerson[] {
   const rand = seededRandom(42);
   const individuals: IndexedPerson[] = [];
@@ -119,7 +98,7 @@ function generateAllIndividuals(): IndexedPerson[] {
       id: p.id,
       name: p.name,
       mention_count: p.mention_count,
-      photo_url: p.photo_url || buildGeneratedPortrait(p.id, p.name),
+      photo_url: getPersonPhotoUrl(p),
       category: "Multiple Sources",
     });
   }
@@ -131,7 +110,7 @@ function generateAllIndividuals(): IndexedPerson[] {
       usedNames.add(notable.name);
       individuals.push({
         ...notable,
-        photo_url: notable.photo_url || buildGeneratedPortrait(notable.id, notable.name),
+        photo_url: getPersonPhotoUrl(notable),
       });
     }
   }
@@ -156,7 +135,7 @@ function generateAllIndividuals(): IndexedPerson[] {
       name,
       mention_count: mentionCount,
       category,
-      photo_url: buildGeneratedPortrait(generatedId, name),
+      photo_url: getPersonPhotoUrl({ id: generatedId, name, photo_url: undefined }),
     });
   }
 

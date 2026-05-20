@@ -42,6 +42,11 @@ const formatTime = (seconds: number) => {
   return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
 };
 
+const getStartOffset = (sourceUrl: string) => {
+  const match = sourceUrl.match(/#t=(\d+)/);
+  return match ? Number(match[1]) : 0;
+};
+
 const VideoModal = ({ isOpen, onClose, video }: VideoModalProps) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -61,9 +66,10 @@ const VideoModal = ({ isOpen, onClose, video }: VideoModalProps) => {
     const media = videoRef.current;
     if (!media) return;
 
-    media.currentTime = 0;
     media.pause();
+    media.muted = false;
     setIsPlaying(false);
+    setIsMuted(false);
     setProgress(0);
   }, [isOpen, video?.title]);
 
@@ -149,6 +155,7 @@ const VideoModal = ({ isOpen, onClose, video }: VideoModalProps) => {
             <div ref={containerRef} className="relative aspect-video w-full bg-background">
               {hasVideoSource ? (
                 <video
+                  key={video.source_url}
                   ref={videoRef}
                   src={video.source_url}
                   poster={video.thumbnail_url || "/placeholder.svg"}
@@ -158,7 +165,14 @@ const VideoModal = ({ isOpen, onClose, video }: VideoModalProps) => {
                   onClick={handleTogglePlay}
                   onPlay={() => setIsPlaying(true)}
                   onPause={() => setIsPlaying(false)}
-                  onLoadedMetadata={(event) => setDuration(event.currentTarget.duration || 0)}
+                  onLoadedMetadata={(event) => {
+                    const media = event.currentTarget;
+                    const startOffset = Math.min(getStartOffset(video.source_url), Math.max(0, (media.duration || 0) - 1));
+                    if (startOffset > 0) {
+                      media.currentTime = startOffset;
+                    }
+                    setDuration(media.duration || 0);
+                  }}
                   onTimeUpdate={(event) => {
                     const media = event.currentTarget;
                     if (!media.duration) return;

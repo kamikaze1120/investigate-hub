@@ -18,6 +18,10 @@ const AllDocuments = () => {
   useEffect(() => {
     const state = location.state as { filter?: string } | null;
     const requestedFilter = state?.filter;
+    const params = new URLSearchParams(location.search);
+    const requestedSearch = params.get("search") || "";
+
+    setSearch(requestedSearch);
 
     if (requestedFilter && (requestedFilter === "All" || documentTypes.includes(requestedFilter))) {
       setTypeFilter(requestedFilter);

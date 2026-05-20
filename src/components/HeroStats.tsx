@@ -1,11 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
+import { TOTAL_DOCUMENTS_INDEXED } from "@/data/allDocuments";
+import { allIndividuals } from "@/data/allIndividuals";
+import { TOTAL_FLIGHT_LOGS } from "@/data/mockData";
 
 const stats = [
-  { label: "Documents Indexed", value: 248192, suffix: "" },
-  { label: "Individuals Referenced", value: 21847, suffix: "" },
-  { label: "Flight Records", value: 3291, suffix: "" },
+  { label: "Documents Indexed", value: TOTAL_DOCUMENTS_INDEXED, suffix: "" },
+  { label: "Individuals Referenced", value: allIndividuals.length, suffix: "" },
+  { label: "Flight Records", value: TOTAL_FLIGHT_LOGS, suffix: "" },
   { label: "Datasets Released", value: 47, suffix: "" },
 ];
 
