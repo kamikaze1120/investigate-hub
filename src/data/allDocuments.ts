@@ -1,3 +1,4 @@
+import { buildDocumentSourceUrl } from "@/lib/archiveLinks";
 import { Document } from "./types";
 import { documentTypes, recentDocuments } from "./mockData";
 
@@ -79,7 +80,7 @@ const createGeneratedDocument = (position: number): Document => {
     release_date: releaseDate,
     document_type: type,
     thumbnail_url: "",
-    source_url: "#",
+    source_url: buildDocumentSourceUrl(`DOC-${releaseDate.slice(0, 4)}-${toPadded(datasetSeed, 4)}`),
     summary,
     referenced_persons: referenced,
   };
