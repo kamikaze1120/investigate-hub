@@ -1,41 +1,95 @@
 # DREADFLIX Archive
 
-Investigative archive frontend built with React, Vite, TypeScript, shadcn-ui, and Tailwind CSS.
+A large-scale investigative data archive built with **React 18**, **TypeScript**, **Vite**, and **Tailwind CSS**. This frontend powers a searchable, browsable repository of public-record documents, flight logs, video evidence, and person profiles.
 
-## Current app behavior
+**Live Preview:** [https://id-preview--f124a84b-b27a-453f-8dd5-556a7b5d405e.lovable.app](https://id-preview--f124a84b-b27a-453f-8dd5-556a7b5d405e.lovable.app)
 
-- **Documents indexed:** 248,192
-- **Individuals indexed:** 21,847
-- **Flight logs indexed:** 1,826
-- **Videos indexed:** 1,826
+---
 
-## What was fixed in this revision
+## Project Overview
 
-- Aligned homepage and index counts with the actual generated datasets
-- Replaced repeated remote avatar generation with deterministic local SVG portraits
-- Fixed document source links so archive entries open into searchable in-app record views
-- Fixed flight-log deep links so person profiles can jump to matching flight references
-- Updated video modal behavior so records keep their mapped media offset instead of resetting to the same frame
+DREADFLIX is a data-dense investigative platform handling hundreds of thousands of indexed records. It demonstrates frontend engineering at scale: virtualized lists, deterministic data generation, deep-linking, and a fully responsive dark-mode UI.
 
-## Project structure
+| Dataset | Records |
+|---------|---------|
+| Documents | 248,192 |
+| Individuals | 21,847 |
+| Flight Logs | 1,826 |
+| Video Evidence | 1,826 |
 
-- `src/pages/` — archive pages and profile views
-- `src/components/` — shared UI components
-- `src/data/mockData.ts` — primary generated archive datasets
-- `src/data/allIndividuals.ts` — complete indexed people list
-- `src/data/allDocuments.ts` — paged document querying for the full archive size
-- `src/data/profileEnrichment.ts` — deterministic profile enrichment for documents, flights, timeline, and connections
-- `src/lib/archiveLinks.ts` — in-app source/deep-link helpers
-- `src/lib/personMedia.ts` — deterministic portrait generation helpers
+---
 
-## Local development
+## Tech Stack
 
-```sh
+| Layer | Technology |
+|-------|------------|
+| Framework | React 18 + Vite |
+| Language | TypeScript (strict) |
+| Styling | Tailwind CSS |
+| UI Components | shadcn/ui |
+| Animation | Framer Motion |
+| Icons | Lucide React |
+
+---
+
+## Key Features
+
+- **Global Search** — Full-text autocomplete with dataset-scoped filters
+- **Person Profiles** — Consolidated timelines, flight logs, document references, and relationship graphs
+- **Video Evidence Library** — Time-offset mapped video player with unique SVG thumbnails
+- **Flight Log Explorer** — Searchable, filterable aviation record grid
+- **Document Archive** — Paginated, deep-linkable record browser
+- **Connection Radar** — D3.js-powered relationship visualization
+- **Responsive Dark Mode** — Cinematic Netflix-style UI optimized for desktop and mobile
+
+---
+
+## Architecture Highlights
+
+- **Deterministic Data Generation** — Seeded PRNG engine produces consistent, non-repeating portraits, thumbnails, and mock datasets across reloads and environments.
+- **Virtualized Pagination** — Large datasets (200k+ documents) are queried and rendered efficiently without crashing the DOM.
+- **Deep-Linking** — URLSearchParams drive filtered views (e.g., `/flights?name=...`) so any state is shareable.
+- **Modular Asset Pipeline** — Local SVG avatar generation and time-offset video URLs eliminate external API dependencies and broken-image risk.
+- **Component-Driven UI** — Shared cards, modals, and layout primitives built on shadcn/ui for rapid iteration.
+
+---
+
+## Project Structure
+
+```
+src/
+  pages/                  Route-level views (archive, profiles, grids)
+  components/             Shared UI (cards, modals, search, stats)
+  data/
+    mockData.ts           Primary generated datasets
+    allIndividuals.ts     Full 21k+ people index
+    allDocuments.ts       Paged document querying
+    profileEnrichment.ts  Deterministic profile metadata
+  lib/
+    archiveLinks.ts       URL helpers for in-app deep links
+    personMedia.ts        SVG portrait generation utilities
+```
+
+---
+
+## Getting Started
+
+```bash
+# Install dependencies
 npm install
+
+# Start the dev server
 npm run dev
 ```
 
-## Publishing / GitHub
+---
 
-- Use the connected GitHub integration to sync and push repository changes
-- Publish from the Lovable Share/Publish flow when you are ready to ship
+## Deployment
+
+The project is deployed via the Lovable platform. To sync changes to the connected GitHub repository, use the **Plus (+) menu → GitHub** integration in the Lovable editor.
+
+---
+
+## License
+
+This project is a frontend demonstration. All data is procedurally generated for UI/UX showcase purposes.
