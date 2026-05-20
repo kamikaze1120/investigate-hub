@@ -152,15 +152,16 @@ export function getEnrichedProfile(personId: string, personName: string, mention
     const prefixes = docTitlePrefixes[docType] || [`${docType} —`];
     const prefix = prefixes[Math.floor(rand() * prefixes.length)];
     const jurisdiction = jurisdictions[Math.floor(rand() * jurisdictions.length)];
+    const datasetNumber = generateDocNumber(rand);
 
     documents.push({
       id: `${personId}-doc-${i}`,
       title: `${prefix} ${jurisdiction}`,
-      dataset_number: generateDocNumber(rand),
+      dataset_number: datasetNumber,
       release_date: generateDate(rand, 2023, 2024),
       document_type: docType,
       thumbnail_url: "",
-      source_url: buildDocumentSourceUrl(generateDocNumber(rand)),
+      source_url: buildDocumentSourceUrl(datasetNumber),
       summary: `Document referencing ${personName} obtained from ${jurisdiction}. Part of ${mentionCount.toLocaleString()} total indexed references.`,
       referenced_persons: [personId],
     });
