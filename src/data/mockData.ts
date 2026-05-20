@@ -1,4 +1,5 @@
 import { Person, Document, TimelineEvent, Flight } from "./types";
+import { buildDocumentSourceUrl } from "@/lib/archiveLinks";
 
 export interface Video {
   id: string;
@@ -173,7 +174,10 @@ export const recentDocuments: Document[] = [
   { id: "d10", title: "Witness Statement — Palm Beach Investigation", dataset_number: "DOC-2006-0923", release_date: "2023-12-14", document_type: "Witness Testimony", thumbnail_url: "", source_url: "#", summary: "Witness statement provided to Palm Beach PD during initial investigation phase.", referenced_persons: ["1", "10"] },
   { id: "d11", title: "FAA Aircraft Registration — N908JE", dataset_number: "DOC-2003-0441", release_date: "2023-12-10", document_type: "Flight Log", thumbnail_url: "", source_url: "#", summary: "Federal Aviation Administration registration records for the Boeing 727-31.", referenced_persons: ["1"] },
   { id: "d12", title: "Civil Complaint — Jane Doe v. Epstein", dataset_number: "DOC-2009-2203", release_date: "2023-12-06", document_type: "Legal Filing", thumbnail_url: "", source_url: "#", summary: "Civil complaint filed under pseudonym detailing allegations from 2001-2004.", referenced_persons: ["1", "2", "4"] },
-];
+].map((document) => ({
+  ...document,
+  source_url: buildDocumentSourceUrl(document.dataset_number),
+}));
 
 const curatedFlightLogs: Flight[] = [
   { id: "f1", date: "2002-03-12", origin: "Teterboro, NJ", destination: "St. Thomas, USVI", document_reference: "DOC-2009-1203", passengers: ["1", "2", "5"] },
