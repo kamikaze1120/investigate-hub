@@ -29,7 +29,7 @@ const PersonCard = ({ name, mention_count, rank, photo_url, description, onClick
       transition={{ delay, duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
       whileHover={{ y: -8, scale: 1.05, transition: { duration: 0.25, ease: [0.2, 0.8, 0.2, 1] } }}
       onClick={onClick}
-      className="group relative flex-shrink-0 cursor-pointer"
+      className="group relative flex-shrink-0 snap-start cursor-pointer"
     >
       <div className="relative h-[320px] w-[210px] overflow-hidden rounded-md border-glow border-glow-hover card-shadow bg-secondary/20 transition-all duration-300 group-hover:border-primary/40">
         <div
