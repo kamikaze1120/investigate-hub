@@ -3,13 +3,13 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import HeroStats from "@/components/HeroStats";
+import HubTiles from "@/components/HubTiles";
 import PersonCard from "@/components/PersonCard";
 import DocumentCard from "@/components/DocumentCard";
 import FlightCard from "@/components/FlightCard";
 import TimelineCard from "@/components/TimelineCard";
 import VideoCard from "@/components/VideoCard";
 import VideoModal from "@/components/VideoModal";
-import HubTiles from "@/components/HubTiles";
 import ContentRow from "@/components/ContentRow";
 import DisclaimerModal from "@/components/DisclaimerModal";
 import { topPersons, recentDocuments, flightLogs, timelineEvents, releasedVideos, type Video } from "@/data/mockData";
@@ -48,7 +48,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground">
       <DisclaimerModal
         isOpen={!disclaimerAcknowledged}
         onAcknowledge={handleDisclaimerAcknowledge}
@@ -67,11 +67,12 @@ const Index = () => {
           transition={{ duration: 0.8 }}
         >
           <Navbar />
-          <main className="pt-16">
-            <HubTiles />
+          <main className="pt-16 pb-20">
             <HeroStats />
+            
+            <HubTiles />
 
-            <ContentRow title="Top 10 Most Mentioned" count={10} accent sectionId="section-individuals" exploreAllPath="/individuals">
+            <ContentRow title="Trending Now" count={10} accent sectionId="section-individuals" exploreAllPath="/individuals">
               {topPersons.map((person, i) => (
                 <PersonCard
                   key={person.id}
@@ -86,7 +87,7 @@ const Index = () => {
               ))}
             </ContentRow>
 
-            <ContentRow title="Released Video Evidence" count={releasedVideos.length} accent sectionId="section-videos" exploreAllPath="/videos">
+            <ContentRow title="Highly Classified Evidence" count={releasedVideos.length} accent sectionId="section-videos" exploreAllPath="/videos">
               {homeVideoPreview.map((video, i) => (
                 <VideoCard
                   key={video.id}
@@ -99,11 +100,12 @@ const Index = () => {
                   referenced_persons={video.referenced_persons}
                   onClick={() => setSelectedVideo(video)}
                   delay={i * 0.06}
+                  isTrending={i < 3}
                 />
               ))}
             </ContentRow>
 
-            <ContentRow title="Recently Released Documents" count={recentDocuments.length} sectionId="section-documents" exploreAllPath="/documents">
+            <ContentRow title="New Releases" count={recentDocuments.length} sectionId="section-documents" exploreAllPath="/documents">
               {recentDocuments.map((doc, i) => (
                 <DocumentCard
                   key={doc.id}
@@ -118,7 +120,7 @@ const Index = () => {
               ))}
             </ContentRow>
 
-            <ContentRow title="Flight Logs" count={flightLogs.length} sectionId="section-flights" exploreAllPath="/flights">
+            <ContentRow title="Connection Matrix" count={flightLogs.length} sectionId="section-flights" exploreAllPath="/flights">
               {homeFlightPreview.map((flight, i) => (
                 <FlightCard
                   key={flight.id}
@@ -131,7 +133,7 @@ const Index = () => {
               ))}
             </ContentRow>
 
-            <ContentRow title="Timeline Highlights" count={timelineEvents.length} sectionId="section-timeline" exploreAllPath="/timeline">
+            <ContentRow title="Historical Archives" count={timelineEvents.length} sectionId="section-timeline" exploreAllPath="/timeline">
               {timelineEvents.map((event, i) => (
                 <TimelineCard
                   key={event.id}
@@ -145,44 +147,45 @@ const Index = () => {
             </ContentRow>
 
             {/* Footer */}
-            <footer className="border-t border-border/30 mt-8">
-              <div className="mx-auto max-w-[1400px] px-6 py-12">
-                <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
+            <footer className="border-t border-border/10 mt-20">
+              <div className="mx-auto max-w-[1400px] px-6 py-16">
+                <div className="flex flex-col gap-12 md:flex-row md:items-start md:justify-between">
                   <div>
-                    <div className="flex items-center gap-1 mb-2">
-                      <span className="font-display text-lg font-black text-primary">DREAD</span>
-                      <span className="font-display text-lg font-black text-foreground">FLIX</span>
+                    <div className="flex items-center gap-1 mb-4">
+                      <span className="font-display text-2xl font-black text-primary tracking-tighter">DREAD</span>
+                      <span className="font-display text-2xl font-black text-foreground tracking-tighter">FLIX</span>
                     </div>
-                    <p className="font-body text-xs text-muted-foreground max-w-xs">
-                      Public investigative document intelligence platform. All documents are publicly released records.
+                    <p className="font-body text-sm text-muted-foreground max-w-sm leading-relaxed">
+                      The world's first decentralized investigative archive. 
+                      Public records, indexed by the people, for the people.
                     </p>
                   </div>
-                  <div className="flex gap-12">
+                  <div className="grid grid-cols-2 gap-16">
                     <div>
-                      <h3 className="font-display text-xs font-bold text-foreground uppercase tracking-wider mb-3">Archive</h3>
-                      <div className="space-y-2">
-                        <p onClick={() => navigate("/documents")} className="font-body text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors">Documents</p>
-                        <p onClick={() => navigate("/individuals")} className="font-body text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors">Individuals</p>
-                        <p onClick={() => navigate("/flights")} className="font-body text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors">Flight Logs</p>
-                        <p onClick={() => navigate("/timeline")} className="font-body text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors">Timeline</p>
+                      <h3 className="font-display text-xs font-bold text-foreground uppercase tracking-[0.2em] mb-6">Archive</h3>
+                      <div className="space-y-3">
+                        <p onClick={() => navigate("/documents")} className="font-body text-sm text-muted-foreground hover:text-primary cursor-pointer transition-colors">Documents</p>
+                        <p onClick={() => navigate("/individuals")} className="font-body text-sm text-muted-foreground hover:text-primary cursor-pointer transition-colors">Individuals</p>
+                        <p onClick={() => navigate("/flights")} className="font-body text-sm text-muted-foreground hover:text-primary cursor-pointer transition-colors">Flight Logs</p>
+                        <p onClick={() => navigate("/timeline")} className="font-body text-sm text-muted-foreground hover:text-primary cursor-pointer transition-colors">Timeline</p>
                       </div>
                     </div>
                     <div>
-                      <h3 className="font-display text-xs font-bold text-foreground uppercase tracking-wider mb-3">Legal</h3>
-                      <div className="space-y-2">
-                        <p onClick={() => navigate("/documents", { state: { filter: "Legal Filing" } })} className="font-body text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors">Legal Filings</p>
-                        <p onClick={() => navigate("/documents", { state: { filter: "Witness Testimony" } })} className="font-body text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors">Testimonies</p>
-                        <p onClick={() => navigate("/documents", { state: { filter: "Law Enforcement" } })} className="font-body text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors">FOIA Requests</p>
+                      <h3 className="font-display text-xs font-bold text-foreground uppercase tracking-[0.2em] mb-6">Support</h3>
+                      <div className="space-y-3">
+                        <p className="font-body text-sm text-muted-foreground hover:text-primary cursor-pointer transition-colors">How it works</p>
+                        <p className="font-body text-sm text-muted-foreground hover:text-primary cursor-pointer transition-colors">Verify Record</p>
+                        <p className="font-body text-sm text-muted-foreground hover:text-primary cursor-pointer transition-colors">API Access</p>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="mt-10 pt-6 border-t border-border/20 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                  <p className="font-data text-[10px] text-muted-foreground/50 tracking-wider">
-                    THIS PLATFORM DOES NOT HOST ORIGINAL FILES. METADATA AND SOURCE LINKS ONLY.
+                <div className="mt-20 pt-8 border-t border-border/5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                  <p className="font-data text-[10px] text-muted-foreground/40 tracking-widest uppercase">
+                    PRODUCED FOR PUBLIC INTELLIGENCE PURPOSES ONLY.
                   </p>
-                  <p className="font-data text-[10px] text-muted-foreground/40">
-                    © {new Date().getFullYear()} DREADFLIX
+                  <p className="font-data text-[10px] text-muted-foreground/30">
+                    © {new Date().getFullYear()} DREADFLIX INTEL. ALL RECORDS PUBLIC.
                   </p>
                 </div>
               </div>
