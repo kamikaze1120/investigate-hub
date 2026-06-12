@@ -36,7 +36,7 @@ const VideoCard = ({ title, description, duration, release_date, category, thumb
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay, duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
       whileHover={{ scale: 1.05, transition: { duration: 0.25 } }}
-      className="group relative flex-shrink-0 cursor-pointer"
+      className="group relative flex-shrink-0 snap-start cursor-pointer"
       onClick={onClick}
     >
       <div className="relative h-[200px] w-[356px] overflow-hidden rounded-md border-glow border-glow-hover transition-all duration-300 group-hover:border-primary/40 group-hover:shadow-[0_0_20px_rgba(229,9,20,0.15)]">
