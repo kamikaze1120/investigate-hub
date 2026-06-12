@@ -1,14 +1,20 @@
 import { useEffect, useState } from "react";
-import { Search, X, Menu } from "lucide-react";
+import { Search, X, Menu, Sparkles, Flame, Tv } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 
 const navItems = [
-  { label: "Archive", path: "/documents" },
+  { label: "Browse", path: "/documents" },
   { label: "Individuals", path: "/individuals" },
   { label: "Timeline", path: "/timeline" },
   { label: "Videos", path: "/videos" },
-  { label: "Connections", path: "/flights" },
+  { label: "Flights", path: "/flights" },
+];
+
+const quickPicks = [
+  { label: "Trending", path: "/individuals", icon: Flame },
+  { label: "New", path: "/documents", icon: Sparkles },
+  { label: "Watchlist", path: "/videos", icon: Tv },
 ];
 
 const Navbar = () => {
@@ -54,6 +60,18 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-3">
+          <div className="hidden items-center gap-2 xl:flex">
+            {quickPicks.map((item) => (
+              <button
+                key={item.label}
+                onClick={() => handleNavClick(item.path)}
+                className="inline-flex items-center gap-1 rounded-sm border border-border/50 bg-secondary/40 px-2.5 py-1.5 font-data text-[10px] uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground"
+              >
+                <item.icon size={11} />
+                {item.label}
+              </button>
+            ))}
+          </div>
           <AnimatePresence>
             {searchOpen && (
               <motion.div
@@ -69,7 +87,7 @@ const Navbar = () => {
                     autoFocus
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search documents, individuals..."
+                    placeholder="Search documents, people, flights..."
                     className="h-9 w-full rounded-sm border border-border bg-secondary/50 pl-9 pr-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/40 focus:outline-none focus:ring-1 focus:ring-primary/20"
                   />
                 </div>
