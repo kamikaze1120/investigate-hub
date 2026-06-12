@@ -9,6 +9,7 @@ import FlightCard from "@/components/FlightCard";
 import TimelineCard from "@/components/TimelineCard";
 import VideoCard from "@/components/VideoCard";
 import VideoModal from "@/components/VideoModal";
+import HubTiles from "@/components/HubTiles";
 import ContentRow from "@/components/ContentRow";
 import DisclaimerModal from "@/components/DisclaimerModal";
 import { topPersons, recentDocuments, flightLogs, timelineEvents, releasedVideos, type Video } from "@/data/mockData";
@@ -67,6 +68,7 @@ const Index = () => {
         >
           <Navbar />
           <main className="pt-16">
+            <HubTiles />
             <HeroStats />
 
             <ContentRow title="Top 10 Most Mentioned" count={10} accent sectionId="section-individuals" exploreAllPath="/individuals">
