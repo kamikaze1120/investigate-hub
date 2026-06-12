@@ -17,6 +17,7 @@ const categoryColors: Record<string, string> = {
 };
 
 const PAGE_SIZE = 48;
+const personMap = new Map(allIndividuals.map((person) => [person.id, person.name]));
 
 const AllVideos = () => {
   const navigate = useNavigate();
@@ -88,7 +89,7 @@ const AllVideos = () => {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {paged.map((video, i) => {
                 const persons = video.referenced_persons
-                  .map((id) => allIndividuals.find((person) => person.id === id)?.name || id)
+                  .map((id) => personMap.get(id) || id)
                   .filter(Boolean);
                 return (
                   <motion.div
@@ -134,7 +135,7 @@ const AllVideos = () => {
                       <p className="mt-1 line-clamp-2 font-body text-xs text-muted-foreground">{video.description}</p>
                        <div className="mt-2 flex flex-wrap items-center gap-2">
                          {video.referenced_persons.slice(0, 3).map((personId) => {
-                           const personName = allIndividuals.find((person) => person.id === personId)?.name || personId;
+                           const personName = personMap.get(personId) || personId;
                            return (
                              <button
                                key={`${video.id}-${personId}`}
