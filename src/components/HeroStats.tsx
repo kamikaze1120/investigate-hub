@@ -1,15 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
+import { Play, Users, FileText, Plane } from "lucide-react";
 import { TOTAL_DOCUMENTS_INDEXED } from "@/data/allDocuments";
 import { allIndividuals } from "@/data/allIndividuals";
-import { TOTAL_FLIGHT_LOGS } from "@/data/mockData";
+import { TOTAL_FLIGHT_LOGS, TOTAL_RELEASED_VIDEOS } from "@/data/mockData";
 
 const stats = [
   { label: "Documents Indexed", value: TOTAL_DOCUMENTS_INDEXED, suffix: "" },
   { label: "Individuals Referenced", value: allIndividuals.length, suffix: "" },
   { label: "Flight Records", value: TOTAL_FLIGHT_LOGS, suffix: "" },
-  { label: "Datasets Released", value: 47, suffix: "" },
+  { label: "Video Entries", value: TOTAL_RELEASED_VIDEOS, suffix: "" },
 ];
 
 const categories = [
@@ -19,6 +20,13 @@ const categories = [
   { label: "Financial Records", filter: "Financial Record", path: "/documents" },
   { label: "Testimonies", filter: "Witness Testimony", path: "/documents" },
   { label: "Surveillance", filter: "Surveillance", path: "/documents" },
+];
+
+const spotlightActions = [
+  { label: "Watch evidence", path: "/videos", icon: Play },
+  { label: "Browse people", path: "/individuals", icon: Users },
+  { label: "Inspect documents", path: "/documents", icon: FileText },
+  { label: "Trace flights", path: "/flights", icon: Plane },
 ];
 
 const AnimatedCounter = ({ target, delay }: { target: number; delay: number }) => {
@@ -83,21 +91,33 @@ const HeroStats = () => {
             <div className="flex items-center gap-3 mb-6">
               <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
               <span className="font-data text-[10px] text-primary tracking-[0.3em] uppercase font-bold">
-                Live Intelligence Portal
+                Investigative Streaming Archive
               </span>
             </div>
             <h1
               className="font-display font-black text-foreground text-balance leading-[0.9] tracking-tighter"
               style={{ fontSize: "clamp(2.5rem, 8vw, 5.5rem)" }}
             >
-              EXPOSING THE
+              STREAM THE
               <br />
-              <span className="text-primary italic">UNSEEN.</span>
+              <span className="text-primary italic">FULL RECORD.</span>
             </h1>
             <p className="mt-6 max-w-lg font-body text-lg text-muted-foreground/90 leading-relaxed border-l-2 border-primary/20 pl-6">
-              Access the world's most comprehensive public record archive. 
-              Search across thousands of verified documents and flight logs.
+              Move fluidly between individuals, filings, route histories, and evidence reels with a more watchable archive flow.
             </p>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              {spotlightActions.map((action) => (
+                <button
+                  key={action.label}
+                  onClick={() => navigate(action.path)}
+                  className="inline-flex items-center gap-2 rounded-sm border border-border/50 bg-secondary/40 px-4 py-2 font-body text-sm text-foreground transition-colors hover:border-primary/40 hover:bg-secondary/70"
+                >
+                  <action.icon size={15} className="text-primary" />
+                  {action.label}
+                </button>
+              ))}
+            </div>
 
             <div className="mt-10 flex flex-wrap gap-2">
               {categories.map((cat, i) => (
@@ -116,7 +136,7 @@ const HeroStats = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="grid grid-cols-2 gap-4 md:gap-6 bg-secondary/10 backdrop-blur-md p-8 rounded-2xl border border-white/5 shadow-2xl"
+            className="grid grid-cols-2 gap-4 md:gap-6 bg-secondary/10 backdrop-blur-md p-8 rounded-sm border border-white/5 shadow-2xl"
           >
             {stats.map((stat, i) => (
               <motion.div
@@ -145,7 +165,7 @@ const HeroStats = () => {
                             +12k
                         </div>
                     </div>
-                    <span className="font-data text-[10px] text-muted-foreground uppercase tracking-widest">Active Researchers</span>
+                    <span className="font-data text-[10px] text-muted-foreground uppercase tracking-widest">Active Sessions</span>
                 </div>
             </div>
           </motion.div>
