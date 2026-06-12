@@ -1,15 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
+import { Play, Users, FileText, Plane } from "lucide-react";
 import { TOTAL_DOCUMENTS_INDEXED } from "@/data/allDocuments";
 import { allIndividuals } from "@/data/allIndividuals";
-import { TOTAL_FLIGHT_LOGS } from "@/data/mockData";
+import { TOTAL_FLIGHT_LOGS, TOTAL_RELEASED_VIDEOS } from "@/data/mockData";
 
 const stats = [
   { label: "Documents Indexed", value: TOTAL_DOCUMENTS_INDEXED, suffix: "" },
   { label: "Individuals Referenced", value: allIndividuals.length, suffix: "" },
   { label: "Flight Records", value: TOTAL_FLIGHT_LOGS, suffix: "" },
-  { label: "Datasets Released", value: 47, suffix: "" },
+  { label: "Video Entries", value: TOTAL_RELEASED_VIDEOS, suffix: "" },
 ];
 
 const categories = [
@@ -21,6 +22,13 @@ const categories = [
   { label: "Surveillance", filter: "Surveillance", path: "/documents" },
 ];
 
+const spotlightActions = [
+  { label: "Watch evidence", path: "/videos", icon: Play },
+  { label: "Browse people", path: "/individuals", icon: Users },
+  { label: "Inspect documents", path: "/documents", icon: FileText },
+  { label: "Trace flights", path: "/flights", icon: Plane },
+];
+
 const AnimatedCounter = ({ target, delay }: { target: number; delay: number }) => {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
@@ -28,23 +36,29 @@ const AnimatedCounter = ({ target, delay }: { target: number; delay: number }) =
 
   useEffect(() => {
     if (!isInView) return;
-    const timer = setTimeout(() => {
-      const duration = 1500;
-      const steps = 40;
-      const increment = target / steps;
-      let current = 0;
-      const interval = setInterval(() => {
-        current += increment;
-        if (current >= target) {
-          setCount(target);
-          clearInterval(interval);
-        } else {
-          setCount(Math.floor(current));
+
+    let frame = 0;
+    let startTime = 0;
+    const duration = 450;
+
+    const begin = window.setTimeout(() => {
+      const step = (timestamp: number) => {
+        if (!startTime) startTime = timestamp;
+        const progress = Math.min((timestamp - startTime) / duration, 1);
+        setCount(Math.round(target * progress));
+
+        if (progress < 1) {
+          frame = window.requestAnimationFrame(step);
         }
-      }, duration / steps);
-      return () => clearInterval(interval);
-    }, delay * 1000);
-    return () => clearTimeout(timer);
+      };
+
+      frame = window.requestAnimationFrame(step);
+    }, delay * 120);
+
+    return () => {
+      window.clearTimeout(begin);
+      window.cancelAnimationFrame(frame);
+    };
   }, [isInView, target, delay]);
 
   return <span ref={ref}>{count.toLocaleString()}</span>;
@@ -64,73 +78,104 @@ const HeroStats = () => {
   };
 
   return (
-    <div className="relative">
-      <div className="absolute top-0 left-0 right-0 h-[300px] red-glow pointer-events-none" />
+    <div className="relative overflow-hidden min-h-[500px] flex flex-col justify-center">
+      {/* Immersive background elements */}
+      <div className="absolute top-0 left-0 right-0 h-full red-glow pointer-events-none opacity-40" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(229,9,20,0.05)_0%,transparent_50%)]" />
+      <div className="absolute -right-[10%] -top-[10%] w-[50%] h-[70%] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
       
-      <div className="relative mx-auto max-w-[1400px] px-6 py-16 md:py-24">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
-        >
-          <div className="flex items-center gap-3 mb-4">
-            <div className="h-px w-12 bg-primary" />
-            <span className="font-data text-[10px] text-primary tracking-[0.2em] uppercase font-medium">
-              Public Intelligence Archive
-            </span>
-          </div>
-          <h1
-            className="font-display font-black text-foreground text-balance leading-[0.95]"
-            style={{ fontSize: "clamp(2rem, 6vw, 4rem)" }}
+      {/* Scanline effect */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%]" />
+
+      <div className="relative mx-auto w-full max-w-[1400px] px-6 py-12 md:py-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1, ease: [0.2, 0.8, 0.2, 1] }}
           >
-            The Archive
-            <br />
-            <span className="text-primary">is Open.</span>
-          </h1>
-          <p className="mt-4 max-w-lg font-body text-base text-muted-foreground leading-relaxed">
-            Publicly released investigative records, indexed and organized for research. 
-            Every document traceable to its official source.
-          </p>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-          className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-8"
-        >
-          {stats.map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 + i * 0.1, duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
-              className="border-l border-border/50 pl-4"
+            <div className="flex items-center gap-3 mb-6">
+              <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
+              <span className="font-data text-[10px] text-primary tracking-[0.3em] uppercase font-bold">
+                Investigative Streaming Archive
+              </span>
+            </div>
+            <h1
+              className="font-display font-black text-foreground text-balance leading-[0.9] tracking-tighter"
+              style={{ fontSize: "clamp(2.5rem, 8vw, 5.5rem)" }}
             >
-              <p className="font-data text-2xl font-bold text-foreground md:text-3xl">
-                <AnimatedCounter target={stat.value} delay={0.6 + i * 0.15} />
-              </p>
-              <p className="mt-1 font-body text-xs text-muted-foreground">{stat.label}</p>
-            </motion.div>
-          ))}
-        </motion.div>
+              STREAM THE
+              <br />
+              <span className="text-primary italic">FULL RECORD.</span>
+            </h1>
+            <p className="mt-6 max-w-lg font-body text-lg text-muted-foreground/90 leading-relaxed border-l-2 border-primary/20 pl-6">
+              Move fluidly between individuals, filings, route histories, and evidence reels with a more watchable archive flow.
+            </p>
 
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1, duration: 0.5 }}
-          className="mt-10 flex flex-wrap gap-2"
-        >
-          {categories.map((cat, i) => (
-            <button
-              key={cat.label}
-              onClick={() => handleCategoryClick(cat, i)}
-              className={i === activeCategory ? "category-pill category-pill-active" : "category-pill category-pill-inactive"}
-            >
-              {cat.label}
-            </button>
-          ))}
-        </motion.div>
+            <div className="mt-6 flex flex-wrap gap-3">
+              {spotlightActions.map((action) => (
+                <button
+                  key={action.label}
+                  onClick={() => navigate(action.path)}
+                  className="inline-flex items-center gap-2 rounded-sm border border-border/50 bg-secondary/40 px-4 py-2 font-body text-sm text-foreground transition-colors hover:border-primary/40 hover:bg-secondary/70"
+                >
+                  <action.icon size={15} className="text-primary" />
+                  {action.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-10 flex flex-wrap gap-2">
+              {categories.map((cat, i) => (
+                <button
+                  key={cat.label}
+                  onClick={() => handleCategoryClick(cat, i)}
+                  className={i === activeCategory ? "category-pill category-pill-active scale-105" : "category-pill category-pill-inactive"}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, delay: 0.2 }}
+            className="grid grid-cols-2 gap-4 md:gap-6 bg-secondary/10 backdrop-blur-md p-8 rounded-sm border border-white/5 shadow-2xl"
+          >
+            {stats.map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 + i * 0.1, duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
+                className="flex flex-col"
+              >
+                <p className="font-data text-3xl font-black text-foreground md:text-4xl tracking-tighter">
+                  <AnimatedCounter target={stat.value} delay={0.8 + i * 0.1} />
+                </p>
+                <p className="mt-1 font-body text-[10px] text-primary uppercase tracking-widest font-bold opacity-70">{stat.label}</p>
+              </motion.div>
+            ))}
+            
+            <div className="col-span-2 pt-6 mt-6 border-t border-white/5">
+                <div className="flex items-center justify-between">
+                    <div className="flex -space-x-2">
+                        {[1,2,3,4].map(i => (
+                            <div key={i} className="h-8 w-8 rounded-full border-2 border-background bg-secondary flex items-center justify-center text-[10px] font-bold">
+                                {String.fromCharCode(64 + i)}
+                            </div>
+                        ))}
+                        <div className="h-8 w-8 rounded-full border-2 border-background bg-primary flex items-center justify-center text-[10px] font-bold">
+                            +12k
+                        </div>
+                    </div>
+                    <span className="font-data text-[10px] text-muted-foreground uppercase tracking-widest">Active Sessions</span>
+                </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </div>
   );

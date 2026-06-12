@@ -17,23 +17,14 @@ const AllDocuments = () => {
 
   useEffect(() => {
     const state = location.state as { filter?: string } | null;
-    const requestedFilter = state?.filter;
     const params = new URLSearchParams(location.search);
     const requestedSearch = params.get("search") || "";
+    const requestedFilter = params.get("filter") || state?.filter || "All";
 
     setSearch(requestedSearch);
-
-    if (requestedFilter && (requestedFilter === "All" || documentTypes.includes(requestedFilter))) {
-      setTypeFilter(requestedFilter);
-      setPage(0);
-      return;
-    }
-
-    if (!requestedFilter) {
-      setTypeFilter("All");
-      setPage(0);
-    }
-  }, [location.key]);
+    setTypeFilter(requestedFilter === "All" || documentTypes.includes(requestedFilter) ? requestedFilter : "All");
+    setPage(0);
+  }, [location.key, location.search, location.state]);
 
   const result = useMemo(
     () => queryDocuments({ page, pageSize: PAGE_SIZE, search, typeFilter }),

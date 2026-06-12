@@ -9,6 +9,7 @@ import type { Document, TimelineEvent, Flight } from "./types";
 import { topPersons, recentDocuments, flightLogs, timelineEvents, personConnections } from "./mockData";
 import { allIndividuals } from "./allIndividuals";
 import { buildDocumentSourceUrl } from "@/lib/archiveLinks";
+import { getPersonPhotoUrl } from "@/lib/personMedia";
 
 // ── Seeded PRNG ──────────────────────────────────────────────────────────────
 
@@ -128,7 +129,7 @@ export function getEnrichedProfile(personId: string, personName: string, mention
           personName: connPerson.name,
           relationship: c.relationship,
           sharedDocs: c.shared_documents,
-          photoUrl: connPerson.photo_url,
+          photoUrl: getPersonPhotoUrl(connPerson),
         } : null;
       })
       .filter(Boolean) as EnrichedProfile["connections"];
@@ -226,7 +227,7 @@ export function getEnrichedProfile(personId: string, personName: string, mention
         personName: tp.name,
         relationship: relationships[Math.floor(rand() * relationships.length)],
         sharedDocs: Math.floor(rand() * 200) + 5,
-        photoUrl: tp.photo_url,
+        photoUrl: getPersonPhotoUrl(tp),
       });
     }
   }
@@ -243,7 +244,7 @@ export function getEnrichedProfile(personId: string, personName: string, mention
           personName: nPerson.name,
           relationship: relationships[Math.floor(rand() * relationships.length)],
           sharedDocs: Math.floor(rand() * 100) + 2,
-          photoUrl: nPerson.photo_url,
+          photoUrl: getPersonPhotoUrl(nPerson),
         });
         continue;
       }
@@ -258,7 +259,7 @@ export function getEnrichedProfile(personId: string, personName: string, mention
         personName: rPerson.name,
         relationship: relationships[Math.floor(rand() * relationships.length)],
         sharedDocs: Math.floor(rand() * 50) + 1,
-        photoUrl: rPerson.photo_url,
+        photoUrl: getPersonPhotoUrl(rPerson),
       });
     }
   }

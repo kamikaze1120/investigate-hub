@@ -1,5 +1,5 @@
-import { ChevronRight } from "lucide-react";
-import { ReactNode, useRef } from "react";
+import { ChevronRight, ChevronLeft } from "lucide-react";
+import { ReactNode, useRef, useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
@@ -14,8 +14,37 @@ interface ContentRowProps {
 
 const ContentRow = ({ title, count, children, accent = false, sectionId, exploreAllPath }: ContentRowProps) => {
   const ref = useRef(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-60px" });
   const navigate = useNavigate();
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(true);
+
+  const handleScroll = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      setShowLeftArrow(scrollLeft > 20);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 20);
+    }
+  };
+
+  useEffect(() => {
+    const current = scrollContainerRef.current;
+    if (current) {
+      current.addEventListener("scroll", handleScroll);
+      // Initial check
+      handleScroll();
+    }
+    return () => current?.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scroll = (direction: "left" | "right") => {
+    if (scrollContainerRef.current) {
+      const { clientWidth } = scrollContainerRef.current;
+      const scrollAmount = direction === "left" ? -clientWidth * 0.8 : clientWidth * 0.8;
+      scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
+  };
 
   return (
     <motion.section
@@ -24,7 +53,7 @@ const ContentRow = ({ title, count, children, accent = false, sectionId, explore
       initial={{ opacity: 0 }}
       animate={isInView ? { opacity: 1 } : { opacity: 0 }}
       transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-      className="py-8 scroll-mt-20"
+      className="py-8 scroll-mt-20 group/row"
     >
       <div className="mx-auto max-w-[1400px] px-6">
         <div className="mb-5 flex items-center justify-between">
@@ -50,9 +79,34 @@ const ContentRow = ({ title, count, children, accent = false, sectionId, explore
           )}
         </div>
       </div>
-      <div className="mx-auto max-w-[1400px] px-6">
+      <div className="relative mx-auto max-w-[1400px] px-6">
+        {/* Left Arrow */}
+        {showLeftArrow && (
+          <button
+            onClick={() => scroll("left")}
+            className="absolute left-6 top-0 bottom-4 z-30 flex w-12 items-center justify-center bg-background/40 opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover/row:opacity-100 hover:bg-background/60"
+            aria-label="Scroll left"
+          >
+            <ChevronLeft size={24} className="text-foreground" />
+          </button>
+        )}
+
+        {/* Right Arrow */}
+        {showRightArrow && (
+          <button
+            onClick={() => scroll("right")}
+            className="absolute right-6 top-0 bottom-4 z-30 flex w-12 items-center justify-center bg-background/40 opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover/row:opacity-100 hover:bg-background/60"
+            aria-label="Scroll right"
+          >
+            <ChevronRight size={24} className="text-foreground" />
+          </button>
+        )}
+
         <div className="relative row-fade-right">
-          <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 pr-8">
+          <div 
+            ref={scrollContainerRef}
+            className="flex snap-x snap-mandatory gap-4 overflow-x-auto scrollbar-hide pb-4 pr-8"
+          >
             {children}
           </div>
         </div>

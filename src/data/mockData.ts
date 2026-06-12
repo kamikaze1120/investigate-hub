@@ -44,7 +44,7 @@ const flightAirports = [
   "Nantucket, MA",
 ];
 
-const videoAssetCount = 36;
+const videoClipAssetIds = Array.from({ length: 36 }, (_, index) => index + 1).filter((assetId) => assetId !== 25);
 
 const hashValue = (value: string) => {
   let hash = 0;
@@ -95,13 +95,18 @@ const buildVideoThumbnail = (index: number, title: string, category: string) => 
 };
 
 const getVideoMediaAsset = (index: number, title: string, category: string, duration: string) => {
-  const assetNumber = ((index * 13 + 7) % videoAssetCount) + 1;
+  const clipIndex = index % videoClipAssetIds.length;
+  const variantCycle = Math.floor(index / videoClipAssetIds.length);
+  const assetNumber = videoClipAssetIds[clipIndex];
   const suffix = pad(assetNumber, 3);
   const durationSeconds = parseDurationToSeconds(duration);
-  const startOffset = durationSeconds > 15 ? hashValue(`${index}-${title}`) % Math.max(8, durationSeconds - 12) : 0;
+  const fractionalOffset = ((hashValue(`${index}-${title}-${category}`) % 4) * 0.01);
+  const startOffset = Number(
+    Math.min(Math.max(0, durationSeconds - 1.15), variantCycle * 0.05 + fractionalOffset).toFixed(2)
+  );
 
   return {
-    source_url: `/videos/clips/evidence-${suffix}.mp4#t=${startOffset}`,
+    source_url: `/videos/clips/evidence-${suffix}.mp4?entry=${pad(index + 1, 4)}#t=${startOffset}`,
     thumbnail_url: buildVideoThumbnail(index, title, category),
   };
 };
@@ -162,18 +167,18 @@ const pickReferencedPersonId = (seed: number, salt = 0) =>
   allReferencedPersonIds[(seed * 37 + salt * 101) % allReferencedPersonIds.length];
 
 export const recentDocuments: Document[] = [
-  { id: "d1", title: "Palm Beach Police Department Investigation Report", dataset_number: "DOC-2006-0847", release_date: "2024-01-15", document_type: "Law Enforcement", thumbnail_url: "", source_url: "#", summary: "Initial investigation report filed by Palm Beach PD detailing complaints received in 2005.", referenced_persons: ["1", "4", "6"] },
-  { id: "d2", title: "Flight Manifest — Lolita Express N908JE", dataset_number: "DOC-2009-1203", release_date: "2024-01-12", document_type: "Flight Log", thumbnail_url: "", source_url: "#", summary: "Complete passenger manifests for aircraft N908JE covering flights from 1995 to 2013.", referenced_persons: ["1", "2", "5", "8"] },
-  { id: "d3", title: "Deposition of Virginia Giuffre — Civil Case", dataset_number: "DOC-2015-3291", release_date: "2024-01-10", document_type: "Legal Filing", thumbnail_url: "", source_url: "#", summary: "Sworn testimony detailing interactions and events from 2000 to 2002.", referenced_persons: ["1", "2", "7"] },
-  { id: "d4", title: "FBI Field Office Memorandum — New York", dataset_number: "DOC-2007-0562", release_date: "2024-01-08", document_type: "Law Enforcement", thumbnail_url: "", source_url: "#", summary: "Internal memorandum regarding investigation status and coordination between field offices.", referenced_persons: ["1", "2", "3"] },
-  { id: "d5", title: "Non-Prosecution Agreement — Southern District of Florida", dataset_number: "DOC-2008-0091", release_date: "2024-01-05", document_type: "Legal Filing", thumbnail_url: "", source_url: "#", summary: "Controversial plea agreement granting immunity to potential co-conspirators.", referenced_persons: ["1"] },
-  { id: "d6", title: "Property Records — Little St. James Island", dataset_number: "DOC-2010-2847", release_date: "2024-01-03", document_type: "Financial Record", thumbnail_url: "", source_url: "#", summary: "Land deed transfers and property records for USVI holdings.", referenced_persons: ["1"] },
-  { id: "d7", title: "Grand Jury Transcript — 2006 Proceedings", dataset_number: "DOC-2019-4501", release_date: "2023-12-28", document_type: "Legal Filing", thumbnail_url: "", source_url: "#", summary: "Partial transcript of grand jury proceedings in Palm Beach County.", referenced_persons: ["1", "4", "10"] },
-  { id: "d8", title: "Maxwell Deposition — Giuffre v. Maxwell", dataset_number: "DOC-2016-5102", release_date: "2023-12-22", document_type: "Legal Filing", thumbnail_url: "", source_url: "#", summary: "Sealed deposition released by court order. Testimony regarding recruitment activities.", referenced_persons: ["2", "7"] },
-  { id: "d9", title: "Brunel Modeling Agency Financial Records", dataset_number: "DOC-2011-1847", release_date: "2023-12-18", document_type: "Financial Record", thumbnail_url: "", source_url: "#", summary: "Financial records from MC2 modeling agency showing payments and transactions.", referenced_persons: ["1", "3"] },
-  { id: "d10", title: "Witness Statement — Palm Beach Investigation", dataset_number: "DOC-2006-0923", release_date: "2023-12-14", document_type: "Witness Testimony", thumbnail_url: "", source_url: "#", summary: "Witness statement provided to Palm Beach PD during initial investigation phase.", referenced_persons: ["1", "10"] },
-  { id: "d11", title: "FAA Aircraft Registration — N908JE", dataset_number: "DOC-2003-0441", release_date: "2023-12-10", document_type: "Flight Log", thumbnail_url: "", source_url: "#", summary: "Federal Aviation Administration registration records for the Boeing 727-31.", referenced_persons: ["1"] },
-  { id: "d12", title: "Civil Complaint — Jane Doe v. Epstein", dataset_number: "DOC-2009-2203", release_date: "2023-12-06", document_type: "Legal Filing", thumbnail_url: "", source_url: "#", summary: "Civil complaint filed under pseudonym detailing allegations from 2001-2004.", referenced_persons: ["1", "2", "4"] },
+  { id: "d1", title: "Palm Beach Police Department Investigation Report", dataset_number: "DOC-2006-0847", release_date: "2024-01-15", document_type: "Law Enforcement", thumbnail_url: "", source_url: "", summary: "Initial investigation report filed by Palm Beach PD detailing complaints received in 2005.", referenced_persons: ["1", "4", "6"] },
+  { id: "d2", title: "Flight Manifest — Lolita Express N908JE", dataset_number: "DOC-2009-1203", release_date: "2024-01-12", document_type: "Flight Log", thumbnail_url: "", source_url: "", summary: "Complete passenger manifests for aircraft N908JE covering flights from 1995 to 2013.", referenced_persons: ["1", "2", "5", "8"] },
+  { id: "d3", title: "Deposition of Virginia Giuffre — Civil Case", dataset_number: "DOC-2015-3291", release_date: "2024-01-10", document_type: "Legal Filing", thumbnail_url: "", source_url: "", summary: "Sworn testimony detailing interactions and events from 2000 to 2002.", referenced_persons: ["1", "2", "7"] },
+  { id: "d4", title: "FBI Field Office Memorandum — New York", dataset_number: "DOC-2007-0562", release_date: "2024-01-08", document_type: "Law Enforcement", thumbnail_url: "", source_url: "", summary: "Internal memorandum regarding investigation status and coordination between field offices.", referenced_persons: ["1", "2", "3"] },
+  { id: "d5", title: "Non-Prosecution Agreement — Southern District of Florida", dataset_number: "DOC-2008-0091", release_date: "2024-01-05", document_type: "Legal Filing", thumbnail_url: "", source_url: "", summary: "Controversial plea agreement granting immunity to potential co-conspirators.", referenced_persons: ["1"] },
+  { id: "d6", title: "Property Records — Little St. James Island", dataset_number: "DOC-2010-2847", release_date: "2024-01-03", document_type: "Financial Record", thumbnail_url: "", source_url: "", summary: "Land deed transfers and property records for USVI holdings.", referenced_persons: ["1"] },
+  { id: "d7", title: "Grand Jury Transcript — 2006 Proceedings", dataset_number: "DOC-2019-4501", release_date: "2023-12-28", document_type: "Legal Filing", thumbnail_url: "", source_url: "", summary: "Partial transcript of grand jury proceedings in Palm Beach County.", referenced_persons: ["1", "4", "10"] },
+  { id: "d8", title: "Maxwell Deposition — Giuffre v. Maxwell", dataset_number: "DOC-2016-5102", release_date: "2023-12-22", document_type: "Legal Filing", thumbnail_url: "", source_url: "", summary: "Sealed deposition released by court order. Testimony regarding recruitment activities.", referenced_persons: ["2", "7"] },
+  { id: "d9", title: "Brunel Modeling Agency Financial Records", dataset_number: "DOC-2011-1847", release_date: "2023-12-18", document_type: "Financial Record", thumbnail_url: "", source_url: "", summary: "Financial records from MC2 modeling agency showing payments and transactions.", referenced_persons: ["1", "3"] },
+  { id: "d10", title: "Witness Statement — Palm Beach Investigation", dataset_number: "DOC-2006-0923", release_date: "2023-12-14", document_type: "Witness Testimony", thumbnail_url: "", source_url: "", summary: "Witness statement provided to Palm Beach PD during initial investigation phase.", referenced_persons: ["1", "10"] },
+  { id: "d11", title: "FAA Aircraft Registration — N908JE", dataset_number: "DOC-2003-0441", release_date: "2023-12-10", document_type: "Flight Log", thumbnail_url: "", source_url: "", summary: "Federal Aviation Administration registration records for the Boeing 727-31.", referenced_persons: ["1"] },
+  { id: "d12", title: "Civil Complaint — Jane Doe v. Epstein", dataset_number: "DOC-2009-2203", release_date: "2023-12-06", document_type: "Legal Filing", thumbnail_url: "", source_url: "", summary: "Civil complaint filed under pseudonym detailing allegations from 2001-2004.", referenced_persons: ["1", "2", "4"] },
 ].map((document) => ({
   ...document,
   source_url: buildDocumentSourceUrl(document.dataset_number),

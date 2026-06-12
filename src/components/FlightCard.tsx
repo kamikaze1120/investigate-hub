@@ -23,7 +23,7 @@ const FlightCard = ({ date, origin, destination, passengers, delay = 0 }: Flight
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
       whileHover={{ y: -8, scale: 1.02, transition: { duration: 0.25 } }}
-      className="group flex-shrink-0 cursor-pointer"
+      className="group flex-shrink-0 snap-start cursor-pointer"
     >
       <div className="relative h-[190px] w-[290px] overflow-hidden rounded-sm border-glow border-glow-hover card-shadow surface-gradient bg-card p-4 flex flex-col justify-between">
         <div>

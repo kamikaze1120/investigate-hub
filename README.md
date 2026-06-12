@@ -1,95 +1,105 @@
-# DREADFLIX Archive
+# DREADFLIX
 
-A large-scale investigative data archive built with **React 18**, **TypeScript**, **Vite**, and **Tailwind CSS**. This frontend powers a searchable, browsable repository of public-record documents, flight logs, video evidence, and person profiles.
+Recruiter-facing showcase for a large-scale investigative archive UI built with **React**, **TypeScript**, **Vite**, and **Tailwind CSS**.
 
-**Live Preview:** [https://id-preview--f124a84b-b27a-453f-8dd5-556a7b5d405e.lovable.app](https://id-preview--f124a84b-b27a-453f-8dd5-556a7b5d405e.lovable.app)
+**Live Preview:** [DREADFLIX Preview](https://id-preview--f124a84b-b27a-453f-8dd5-556a7b5d405e.lovable.app)
 
----
+## Executive Summary
 
-## Project Overview
+DREADFLIX is a cinematic, streaming-inspired intelligence interface for exploring large public-record datasets. The project focuses on high-volume browsing, entity-centric navigation, deterministic data presentation, and fast movement between interconnected records.
 
-DREADFLIX is a data-dense investigative platform handling hundreds of thousands of indexed records. It demonstrates frontend engineering at scale: virtualized lists, deterministic data generation, deep-linking, and a fully responsive dark-mode UI.
+This build demonstrates:
 
-| Dataset | Records |
-|---------|---------|
+- **Frontend architecture for large datasets**
+- **Design systems and themed UX execution**
+- **Cross-linked entity browsing**
+- **Responsive motion design and immersive content presentation**
+- **Data quality remediation in generated archive interfaces**
+
+## Dataset Scale Demonstrated
+
+| Domain | Indexed Volume |
+| --- | ---: |
 | Documents | 248,192 |
 | Individuals | 21,847 |
-| Flight Logs | 1,826 |
-| Video Evidence | 1,826 |
+| Flight Records | 1,826 |
+| Video Entries | 1,826 |
 
----
+## What Recruiters Should Notice
 
-## Tech Stack
+### Product Thinking
+- Reframed a static archive into a **streaming-style browse experience** inspired by modern content platforms.
+- Improved discovery with **homepage shelves, quick-pick navigation, and continuous horizontal browsing**.
+- Designed around a clear audience: users who need to move quickly between **people, documents, flights, and media evidence**.
 
-| Layer | Technology |
-|-------|------------|
-| Framework | React 18 + Vite |
-| Language | TypeScript (strict) |
-| Styling | Tailwind CSS |
-| UI Components | shadcn/ui |
-| Animation | Framer Motion |
+### Frontend Engineering
+- Built with **component-driven React architecture** and reusable page/card primitives.
+- Used **deterministic generators** to create stable large-scale mock datasets for repeatable UI behavior.
+- Added **deep-linkable archive navigation** for documents, profiles, and flight references.
+- Preserved performance by avoiding naïve rendering patterns for large record counts.
+
+### Data Integrity Work
+- Audited duplicate and missing data behavior across the archive views.
+- Corrected broken profile-level routing to related documents, flights, and connected individuals.
+- Standardized portrait fallbacks so non-photo profiles still render consistently.
+- Reduced repeated media mapping issues in the generated video source model.
+
+## Core Experience Areas
+
+- **Homepage browse system** with curated shelves and streaming-style discovery
+- **Person profiles** with documents, timeline events, flights, videos, and relationship links
+- **Document archive** with type filters, search, and deep links
+- **Flight explorer** with passenger-to-profile navigation
+- **Video library** with thumbnails, playback modal, and related-person access
+
+## Technical Stack
+
+| Layer | Implementation |
+| --- | --- |
+| Framework | React 18 + Vite 5 |
+| Language | TypeScript 5 |
+| Styling | Tailwind CSS v3 |
+| UI Foundation | shadcn/ui |
+| Motion | Framer Motion |
 | Icons | Lucide React |
+| Routing | React Router |
 
----
+## Architecture Notes
 
-## Key Features
+### Deterministic Data Layer
+The application uses seeded generation patterns so large synthetic datasets remain stable across reloads, previews, and environments. This allows the interface to simulate real archive scale while keeping behavior predictable for QA and design iteration.
 
-- **Global Search** — Full-text autocomplete with dataset-scoped filters
-- **Person Profiles** — Consolidated timelines, flight logs, document references, and relationship graphs
-- **Video Evidence Library** — Time-offset mapped video player with unique SVG thumbnails
-- **Flight Log Explorer** — Searchable, filterable aviation record grid
-- **Document Archive** — Paginated, deep-linkable record browser
-- **Connection Radar** — D3.js-powered relationship visualization
-- **Responsive Dark Mode** — Cinematic Netflix-style UI optimized for desktop and mobile
+### Entity-Centric Navigation
+People act as the connective tissue of the product. From a single profile, users can pivot into associated documents, flight records, video evidence, and linked profiles.
 
----
-
-## Architecture Highlights
-
-- **Deterministic Data Generation** — Seeded PRNG engine produces consistent, non-repeating portraits, thumbnails, and mock datasets across reloads and environments.
-- **Virtualized Pagination** — Large datasets (200k+ documents) are queried and rendered efficiently without crashing the DOM.
-- **Deep-Linking** — URLSearchParams drive filtered views (e.g., `/flights?name=...`) so any state is shareable.
-- **Modular Asset Pipeline** — Local SVG avatar generation and time-offset video URLs eliminate external API dependencies and broken-image risk.
-- **Component-Driven UI** — Shared cards, modals, and layout primitives built on shadcn/ui for rapid iteration.
-
----
+### Media Fallback Strategy
+The app blends a limited local real-media set with deterministic generated portraits and generated thumbnails to keep the interface visually complete even when source assets are sparse.
 
 ## Project Structure
 
-```
+```text
 src/
-  pages/                  Route-level views (archive, profiles, grids)
-  components/             Shared UI (cards, modals, search, stats)
-  data/
-    mockData.ts           Primary generated datasets
-    allIndividuals.ts     Full 21k+ people index
-    allDocuments.ts       Paged document querying
-    profileEnrichment.ts  Deterministic profile metadata
-  lib/
-    archiveLinks.ts       URL helpers for in-app deep links
-    personMedia.ts        SVG portrait generation utilities
+  components/       Reusable UI, rows, cards, modals, nav, hero modules
+  data/             Archive datasets, generators, enrichment logic
+  lib/              URL helpers and media utilities
+  pages/            Route-level archive experiences
+  test/             Vitest setup and example test coverage
+public/
+  photos/           Real local portrait assets for key individuals
+  videos/           Local clip assets and supporting media
 ```
 
----
-
-## Getting Started
+## Local Development
 
 ```bash
-# Install dependencies
 npm install
-
-# Start the dev server
 npm run dev
 ```
 
----
+## Deployment Workflow
 
-## Deployment
+This project is edited and previewed in Lovable, with GitHub sync handled through the platform integration.
 
-The project is deployed via the Lovable platform. To sync changes to the connected GitHub repository, use the **Plus (+) menu → GitHub** integration in the Lovable editor.
+## Important Note
 
----
-
-## License
-
-This project is a frontend demonstration. All data is procedurally generated for UI/UX showcase purposes.
+This version is a **frontend portfolio/demo build**. The archive scale and many relationships are represented through deterministic generated data rather than a live production ingestion pipeline.

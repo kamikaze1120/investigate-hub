@@ -5,6 +5,7 @@ import { ArrowLeft, Plane, Search, ChevronLeft, ChevronRight } from "lucide-reac
 import Navbar from "@/components/Navbar";
 import { flightLogs } from "@/data/mockData";
 import { allIndividuals } from "@/data/allIndividuals";
+import { buildPersonProfileUrl } from "@/lib/archiveLinks";
 
 const PAGE_SIZE = 80;
 
@@ -113,9 +114,18 @@ const AllFlights = () => {
                           {flight.origin} → {flight.destination}
                         </h3>
                         <div className="mt-2 flex flex-wrap gap-1.5">
-                          {passengers.map((name) => (
-                            <span key={name} className="rounded-sm bg-secondary/80 px-1.5 py-0.5 font-data text-[10px] text-secondary-foreground">{name}</span>
-                          ))}
+                          {flight.passengers.map((passengerId, passengerIndex) => {
+                            const passengerName = passengers[passengerIndex] || personMap.get(passengerId) || passengerId;
+                            return (
+                              <button
+                                key={`${flight.id}-${passengerId}`}
+                                onClick={() => navigate(buildPersonProfileUrl(passengerId))}
+                                className="rounded-sm bg-secondary/80 px-1.5 py-0.5 font-data text-[10px] text-secondary-foreground transition-colors hover:bg-primary/20 hover:text-primary"
+                              >
+                                {passengerName}
+                              </button>
+                            );
+                          })}
                         </div>
                       </div>
                     </div>

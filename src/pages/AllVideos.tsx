@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import VideoModal from "@/components/VideoModal";
 import { releasedVideos, type Video } from "@/data/mockData";
 import { allIndividuals } from "@/data/allIndividuals";
+import { buildPersonProfileUrl } from "@/lib/archiveLinks";
 
 const categoryColors: Record<string, string> = {
   Surveillance: "bg-primary/20 text-primary",
@@ -16,6 +17,7 @@ const categoryColors: Record<string, string> = {
 };
 
 const PAGE_SIZE = 48;
+const personMap = new Map(allIndividuals.map((person) => [person.id, person.name]));
 
 const AllVideos = () => {
   const navigate = useNavigate();
@@ -87,7 +89,7 @@ const AllVideos = () => {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {paged.map((video, i) => {
                 const persons = video.referenced_persons
-                  .map((id) => allIndividuals.find((person) => person.id === id)?.name || id)
+                  .map((id) => personMap.get(id) || id)
                   .filter(Boolean);
                 return (
                   <motion.div
@@ -131,10 +133,22 @@ const AllVideos = () => {
                     <div className="p-4">
                       <h3 className="line-clamp-2 font-display text-sm font-semibold leading-snug text-foreground">{video.title}</h3>
                       <p className="mt-1 line-clamp-2 font-body text-xs text-muted-foreground">{video.description}</p>
-                      <div className="mt-2 flex flex-wrap items-center gap-2">
-                        {persons.slice(0, 3).map((name) => (
-                          <span key={name} className="rounded-sm bg-secondary/80 px-1.5 py-0.5 font-data text-[10px] text-secondary-foreground">{name}</span>
-                        ))}
+                       <div className="mt-2 flex flex-wrap items-center gap-2">
+                         {video.referenced_persons.slice(0, 3).map((personId) => {
+                           const personName = personMap.get(personId) || personId;
+                           return (
+                             <button
+                               key={`${video.id}-${personId}`}
+                               onClick={(event) => {
+                                 event.stopPropagation();
+                                 navigate(buildPersonProfileUrl(personId));
+                               }}
+                               className="rounded-sm bg-secondary/80 px-1.5 py-0.5 font-data text-[10px] text-secondary-foreground transition-colors hover:bg-primary/20 hover:text-primary"
+                             >
+                               {personName}
+                             </button>
+                           );
+                         })}
                         <span className="font-data text-[10px] text-muted-foreground">{video.release_date}</span>
                       </div>
                     </div>
