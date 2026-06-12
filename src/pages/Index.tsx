@@ -177,8 +177,7 @@ const Index = () => {
                       <span className="font-display text-2xl font-black text-foreground tracking-tighter">FLIX</span>
                     </div>
                     <p className="font-body text-sm text-muted-foreground max-w-sm leading-relaxed">
-                      The world's first decentralized investigative archive. 
-                      Public records, indexed by the people, for the people.
+                      Streaming-style investigative archive interface for navigating public records, linked entities, and evidence collections.
                     </p>
                   </div>
                   <div className="grid grid-cols-2 gap-16">
