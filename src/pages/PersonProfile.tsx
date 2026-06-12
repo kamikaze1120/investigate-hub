@@ -7,6 +7,8 @@ import VideoModal from "@/components/VideoModal";
 import { topPersons, releasedVideos, type Video } from "@/data/mockData";
 import { allIndividuals } from "@/data/allIndividuals";
 import { getEnrichedProfile } from "@/data/profileEnrichment";
+import { getPersonPhotoUrl } from "@/lib/personMedia";
+import { buildDocumentSourceUrl, buildFlightSearchUrl, buildPersonProfileUrl, openArchiveUrl } from "@/lib/archiveLinks";
 
 const personNameMap = new Map(allIndividuals.map((person) => [person.id, person.name]));
 
@@ -36,7 +38,7 @@ const PersonProfile = () => {
 
   const name = source.name;
   const mentionCount = source.mention_count;
-  const photoUrl = source.photo_url || "";
+  const photoUrl = getPersonPhotoUrl(source);
   const category = indexedPerson?.category || "Multiple Sources";
   const description = topPerson?.description ||
     `Referenced individual appearing in ${category} records. Mentioned ${mentionCount.toLocaleString()} times across publicly released documents and depositions.`;
@@ -170,6 +172,7 @@ const PersonProfile = () => {
                 {personVideos.map((video, i) => (
                   <motion.div key={video.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 + i * 0.06, duration: 0.4 }}
                     className="group flex items-center justify-between rounded-sm border-glow border-glow-hover bg-card surface-gradient p-4 cursor-pointer"
+                    role="button"
                     onClick={() => setSelectedVideo(video)}
                   >
                     <div className="flex-1 min-w-0">
@@ -201,6 +204,8 @@ const PersonProfile = () => {
                 {enriched.documents.map((doc, i) => (
                   <motion.div key={doc.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 + i * 0.03, duration: 0.4 }}
                     className="group flex items-center justify-between rounded-sm border-glow border-glow-hover bg-card surface-gradient p-4 cursor-pointer"
+                    role="button"
+                    onClick={() => openArchiveUrl(doc.source_url || buildDocumentSourceUrl(doc.dataset_number))}
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
@@ -234,7 +239,9 @@ const PersonProfile = () => {
               <div className="grid gap-3 md:grid-cols-2">
                 {enriched.flights.map((flight, i) => (
                   <motion.div key={flight.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 + i * 0.04, duration: 0.4 }}
-                    className="rounded-sm border-glow bg-card surface-gradient p-4"
+                    className="rounded-sm border-glow bg-card surface-gradient p-4 cursor-pointer transition-colors hover:border-cyan-glow/40"
+                    role="button"
+                    onClick={() => navigate(buildFlightSearchUrl(flight.document_reference))}
                   >
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-data text-[10px] text-cyan-glow">{flight.date}</span>
@@ -273,7 +280,7 @@ const PersonProfile = () => {
                 {enriched.connections.map((conn, i) => (
                   <motion.div key={conn.personId} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.6 + i * 0.04, duration: 0.4 }}>
                     <Link
-                      to={`/person/${conn.personId}`}
+                      to={buildPersonProfileUrl(conn.personId)}
                       className="block rounded-sm border-glow border-glow-hover bg-card surface-gradient p-4 hover:translate-y-[-2px] transition-all duration-200"
                     >
                       <div className="flex items-center gap-3 mb-2">
