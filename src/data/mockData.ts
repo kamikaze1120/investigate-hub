@@ -44,7 +44,7 @@ const flightAirports = [
   "Nantucket, MA",
 ];
 
-const videoAssetCount = 36;
+const videoClipAssetIds = Array.from({ length: 36 }, (_, index) => index + 1).filter((assetId) => assetId !== 25);
 
 const hashValue = (value: string) => {
   let hash = 0;
@@ -95,13 +95,18 @@ const buildVideoThumbnail = (index: number, title: string, category: string) => 
 };
 
 const getVideoMediaAsset = (index: number, title: string, category: string, duration: string) => {
-  const assetNumber = ((index * 13 + 7) % videoAssetCount) + 1;
+  const clipIndex = index % videoClipAssetIds.length;
+  const variantCycle = Math.floor(index / videoClipAssetIds.length);
+  const assetNumber = videoClipAssetIds[clipIndex];
   const suffix = pad(assetNumber, 3);
   const durationSeconds = parseDurationToSeconds(duration);
-  const startOffset = durationSeconds > 15 ? hashValue(`${index}-${title}`) % Math.max(8, durationSeconds - 12) : 0;
+  const fractionalOffset = ((hashValue(`${index}-${title}-${category}`) % 4) * 0.01);
+  const startOffset = Number(
+    Math.min(Math.max(0, durationSeconds - 1.15), variantCycle * 0.05 + fractionalOffset).toFixed(2)
+  );
 
   return {
-    source_url: `/videos/clips/evidence-${suffix}.mp4#t=${startOffset}`,
+    source_url: `/videos/clips/evidence-${suffix}.mp4?entry=${pad(index + 1, 4)}#t=${startOffset}`,
     thumbnail_url: buildVideoThumbnail(index, title, category),
   };
 };
