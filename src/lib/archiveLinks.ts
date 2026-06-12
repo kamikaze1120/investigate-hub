@@ -10,6 +10,11 @@ export const buildFlightSearchUrl = (documentReference: string) => {
   return `/flights?search=${encodeURIComponent(documentReference)}`;
 };
 
+export const buildPersonProfileUrl = (personId: string) => {
+  if (!personId) return "/individuals";
+  return `/person/${encodeURIComponent(personId)}`;
+};
+
 export const openArchiveUrl = (url: string) => {
   if (!url) return;
 
