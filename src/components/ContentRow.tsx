@@ -105,7 +105,7 @@ const ContentRow = ({ title, count, children, accent = false, sectionId, explore
         <div className="relative row-fade-right">
           <div 
             ref={scrollContainerRef}
-            className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 pr-8"
+            className="flex snap-x snap-mandatory gap-4 overflow-x-auto scrollbar-hide pb-4 pr-8"
           >
             {children}
           </div>
