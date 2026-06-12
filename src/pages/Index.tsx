@@ -17,6 +17,8 @@ import { topPersons, recentDocuments, flightLogs, timelineEvents, releasedVideos
 const DISCLAIMER_STORAGE_KEY = "dreadflix_disclaimer_acknowledged_v1";
 const HOME_VIDEO_PREVIEW_LIMIT = 12;
 const HOME_FLIGHT_PREVIEW_LIMIT = 16;
+const HOME_RECENT_VIDEO_LIMIT = 12;
+const HOME_CURATED_DOC_LIMIT = 10;
 
 const Index = () => {
   const [disclaimerAcknowledged, setDisclaimerAcknowledged] = useState<boolean>(() => {
@@ -27,6 +29,8 @@ const Index = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const homeVideoPreview = releasedVideos.slice(0, HOME_VIDEO_PREVIEW_LIMIT);
+  const newestVideoPreview = [...releasedVideos].sort((a, b) => b.release_date.localeCompare(a.release_date)).slice(0, HOME_RECENT_VIDEO_LIMIT);
+  const curatedDocuments = [...recentDocuments].sort((a, b) => b.release_date.localeCompare(a.release_date)).slice(0, HOME_CURATED_DOC_LIMIT);
   const homeFlightPreview = flightLogs.slice(0, HOME_FLIGHT_PREVIEW_LIMIT);
 
   useEffect(() => {
@@ -87,7 +91,7 @@ const Index = () => {
               ))}
             </ContentRow>
 
-            <ContentRow title="Highly Classified Evidence" count={releasedVideos.length} accent sectionId="section-videos" exploreAllPath="/videos">
+            <ContentRow title="Continue Watching Evidence" count={releasedVideos.length} accent sectionId="section-videos" exploreAllPath="/videos">
               {homeVideoPreview.map((video, i) => (
                 <VideoCard
                   key={video.id}
@@ -105,8 +109,25 @@ const Index = () => {
               ))}
             </ContentRow>
 
-            <ContentRow title="New Releases" count={recentDocuments.length} sectionId="section-documents" exploreAllPath="/documents">
-              {recentDocuments.map((doc, i) => (
+            <ContentRow title="Because You Opened Case Files" count={newestVideoPreview.length} sectionId="section-recents" exploreAllPath="/videos">
+              {newestVideoPreview.map((video, i) => (
+                <VideoCard
+                  key={`${video.id}-recent`}
+                  title={video.title}
+                  description={video.description}
+                  duration={video.duration}
+                  release_date={video.release_date}
+                  category={video.category}
+                  thumbnail_url={video.thumbnail_url}
+                  referenced_persons={video.referenced_persons}
+                  onClick={() => setSelectedVideo(video)}
+                  delay={i * 0.04}
+                />
+              ))}
+            </ContentRow>
+
+            <ContentRow title="New Releases" count={curatedDocuments.length} sectionId="section-documents" exploreAllPath="/documents">
+              {curatedDocuments.map((doc, i) => (
                 <DocumentCard
                   key={doc.id}
                   title={doc.title}
@@ -120,7 +141,7 @@ const Index = () => {
               ))}
             </ContentRow>
 
-            <ContentRow title="Connection Matrix" count={flightLogs.length} sectionId="section-flights" exploreAllPath="/flights">
+            <ContentRow title="Route History" count={flightLogs.length} sectionId="section-flights" exploreAllPath="/flights">
               {homeFlightPreview.map((flight, i) => (
                 <FlightCard
                   key={flight.id}
