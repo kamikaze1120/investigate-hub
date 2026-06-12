@@ -42,7 +42,7 @@ const DocumentCard = ({ title, dataset_number, release_date, document_type, summ
       transition={{ delay, duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
       whileHover={{ scale: 1.04, transition: { duration: 0.25 } }}
       onClick={handleOpenSource}
-      className={`group relative flex-shrink-0 ${hasSource ? "cursor-pointer" : "cursor-default"}`}
+      className={`group relative flex-shrink-0 snap-start ${hasSource ? "cursor-pointer" : "cursor-default"}`}
     >
       <div className="relative h-[240px] w-[320px] overflow-hidden rounded-md border-glow border-glow-hover card-shadow surface-gradient bg-card transition-all duration-300 group-hover:border-primary/30 group-hover:shadow-[0_0_20px_rgba(229,9,20,0.1)]">
         <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent pointer-events-none" />
