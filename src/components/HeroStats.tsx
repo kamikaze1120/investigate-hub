@@ -36,23 +36,29 @@ const AnimatedCounter = ({ target, delay }: { target: number; delay: number }) =
 
   useEffect(() => {
     if (!isInView) return;
-    const timer = setTimeout(() => {
-      const duration = 1500;
-      const steps = 40;
-      const increment = target / steps;
-      let current = 0;
-      const interval = setInterval(() => {
-        current += increment;
-        if (current >= target) {
-          setCount(target);
-          clearInterval(interval);
-        } else {
-          setCount(Math.floor(current));
+
+    let frame = 0;
+    let startTime = 0;
+    const duration = 450;
+
+    const begin = window.setTimeout(() => {
+      const step = (timestamp: number) => {
+        if (!startTime) startTime = timestamp;
+        const progress = Math.min((timestamp - startTime) / duration, 1);
+        setCount(Math.round(target * progress));
+
+        if (progress < 1) {
+          frame = window.requestAnimationFrame(step);
         }
-      }, duration / steps);
-      return () => clearInterval(interval);
-    }, delay * 1000);
-    return () => clearTimeout(timer);
+      };
+
+      frame = window.requestAnimationFrame(step);
+    }, delay * 120);
+
+    return () => {
+      window.clearTimeout(begin);
+      window.cancelAnimationFrame(frame);
+    };
   }, [isInView, target, delay]);
 
   return <span ref={ref}>{count.toLocaleString()}</span>;
