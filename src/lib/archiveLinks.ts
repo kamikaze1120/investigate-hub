@@ -23,5 +23,10 @@ export const openArchiveUrl = (url: string) => {
     return;
   }
 
-  window.open(url, "_self");
+  window.location.assign(url);
+};
+
+export const isInternalArchiveUrl = (url?: string | null) => {
+  if (!url) return false;
+  return !isAbsoluteUrl(url) && url.startsWith("/");
 };
