@@ -8,7 +8,7 @@ import { topPersons, releasedVideos, type Video } from "@/data/mockData";
 import { allIndividuals } from "@/data/allIndividuals";
 import { getEnrichedProfile } from "@/data/profileEnrichment";
 import { getPersonPhotoUrl } from "@/lib/personMedia";
-import { buildDocumentSourceUrl, buildFlightSearchUrl, buildPersonProfileUrl, openArchiveUrl } from "@/lib/archiveLinks";
+import { buildDocumentSourceUrl, buildFlightSearchUrl, buildPersonProfileUrl, isInternalArchiveUrl, openArchiveUrl } from "@/lib/archiveLinks";
 
 const personNameMap = new Map(allIndividuals.map((person) => [person.id, person.name]));
 
@@ -205,7 +205,14 @@ const PersonProfile = () => {
                   <motion.div key={doc.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 + i * 0.03, duration: 0.4 }}
                     className="group flex items-center justify-between rounded-sm border-glow border-glow-hover bg-card surface-gradient p-4 cursor-pointer"
                     role="button"
-                    onClick={() => openArchiveUrl(doc.source_url || buildDocumentSourceUrl(doc.dataset_number))}
+                    onClick={() => {
+                      const targetUrl = doc.source_url || buildDocumentSourceUrl(doc.dataset_number);
+                      if (isInternalArchiveUrl(targetUrl)) {
+                        navigate(targetUrl);
+                        return;
+                      }
+                      openArchiveUrl(targetUrl);
+                    }}
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
