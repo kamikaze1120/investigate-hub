@@ -63,22 +63,6 @@ const bundledVideoSources = [
   },
 ];
 
-const hashValue = (value: string) => {
-  let hash = 0;
-  for (let i = 0; i < value.length; i += 1) {
-    hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
-  }
-  return hash;
-};
-
-const parseDurationToSeconds = (duration: string) => {
-  const [minutesRaw, secondsRaw] = duration.split(":");
-  const minutes = Number(minutesRaw);
-  const seconds = Number(secondsRaw);
-  if (!Number.isFinite(minutes) || !Number.isFinite(seconds)) return 0;
-  return minutes * 60 + seconds;
-};
-
 const buildVideoThumbnail = (index: number, title: string, category: string) => {
   const hueA = (index * 37) % 360;
   const hueB = (hueA + 42) % 360;
@@ -278,6 +262,54 @@ const curatedVideoRecords: Omit<Video, "id" | "source_url" | "thumbnail_url">[] 
 
 export const TOTAL_RELEASED_VIDEOS = bundledVideoSources.length;
 
+const generatedVideoCategories = ["Surveillance", "Legal Proceeding", "Press Conference", "Evidence", "Interview"];
+const generatedVideoTitlePrefixes = [
+  "Bundled Evidence Clip",
+  "Archive Video Segment",
+  "Released Footage Excerpt",
+  "Case Media Segment",
+  "Evidence Reel",
+];
+const generatedVideoDescriptionTemplates = [
+  "Bundled public video file indexed in the local evidence library.",
+  "Local released clip mapped to the corresponding evidence shelf in this archive.",
+  "Bundled archive footage available in the current project asset set.",
+  "Indexed local video evidence with linked person references and thumbnail support.",
+  "Public-facing bundled clip included with the current archive build.",
+];
+const generatedVideoDurations = ["04:58", "05:12", "05:39", "05:44", "06:03", "06:25", "06:42"];
+
+const buildGeneratedVideo = (position: number): Video => {
+  const index = curatedVideoRecords.length + position;
+  const category = generatedVideoCategories[index % generatedVideoCategories.length];
+  const titlePrefix = generatedVideoTitlePrefixes[index % generatedVideoTitlePrefixes.length];
+  const title = `${titlePrefix} ${pad(index + 1, 3)}`;
+  const description = generatedVideoDescriptionTemplates[index % generatedVideoDescriptionTemplates.length];
+  const duration = generatedVideoDurations[index % generatedVideoDurations.length];
+  const media = getVideoMediaAsset(index, title, category);
+
+  const referenced = [
+    pickReferencedPersonId(index, 5),
+    pickReferencedPersonId(index, 6),
+  ];
+
+  if (index % 4 === 0) {
+    referenced.push(pickReferencedPersonId(index, 7));
+  }
+
+  return {
+    id: `v${index + 1}`,
+    title,
+    description,
+    duration,
+    release_date: buildDate(index, 2020, 5),
+    source_url: media.source_url,
+    thumbnail_url: media.thumbnail_url,
+    category,
+    referenced_persons: Array.from(new Set(referenced)),
+  };
+};
+
 const curatedVideos: Video[] = curatedVideoRecords.map((record, index) => {
   const media = getVideoMediaAsset(index, record.title, record.category);
   return {
@@ -288,7 +320,10 @@ const curatedVideos: Video[] = curatedVideoRecords.map((record, index) => {
   };
 });
 
-export const releasedVideos: Video[] = curatedVideos;
+export const releasedVideos: Video[] = [...curatedVideos];
+for (let i = 0; i < TOTAL_RELEASED_VIDEOS - curatedVideos.length; i += 1) {
+  releasedVideos.push(buildGeneratedVideo(i));
+}
 
 export const personConnections: PersonConnection[] = [
   { person_id: "1", connected_to: "2", shared_documents: 847, relationship: "Associate" },
