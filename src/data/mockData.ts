@@ -45,22 +45,23 @@ const flightAirports = [
 ];
 
 const videoClipAssetIds = Array.from({ length: 36 }, (_, index) => index + 1).filter((assetId) => assetId !== 25);
-
-const hashValue = (value: string) => {
-  let hash = 0;
-  for (let i = 0; i < value.length; i += 1) {
-    hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
-  }
-  return hash;
-};
-
-const parseDurationToSeconds = (duration: string) => {
-  const [minutesRaw, secondsRaw] = duration.split(":");
-  const minutes = Number(minutesRaw);
-  const seconds = Number(secondsRaw);
-  if (!Number.isFinite(minutes) || !Number.isFinite(seconds)) return 0;
-  return minutes * 60 + seconds;
-};
+const bundledVideoSources = [
+  ...videoClipAssetIds.map((assetId) => ({
+    assetKey: `evidence-${pad(assetId, 3)}`,
+    source_url: `/videos/clips/evidence-${pad(assetId, 3)}.mp4`,
+    thumbnail_url: `/videos/thumbnails/evidence-${pad(assetId, 3)}.jpg`,
+  })),
+  {
+    assetKey: "evidence-extended",
+    source_url: "/videos/evidence-extended.mp4",
+    thumbnail_url: "/videos/thumbnails/evidence-extended.jpg",
+  },
+  {
+    assetKey: "evidence-reel",
+    source_url: "/videos/evidence-reel.mp4",
+    thumbnail_url: "/videos/thumbnails/evidence-reel.jpg",
+  },
+];
 
 const buildVideoThumbnail = (index: number, title: string, category: string) => {
   const hueA = (index * 37) % 360;
@@ -94,19 +95,18 @@ const buildVideoThumbnail = (index: number, title: string, category: string) => 
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 };
 
-const getVideoMediaAsset = (index: number, title: string, category: string, duration: string) => {
-  const clipIndex = index % videoClipAssetIds.length;
-  const variantCycle = Math.floor(index / videoClipAssetIds.length);
-  const assetNumber = videoClipAssetIds[clipIndex];
-  const suffix = pad(assetNumber, 3);
-  const durationSeconds = parseDurationToSeconds(duration);
-  const fractionalOffset = ((hashValue(`${index}-${title}-${category}`) % 4) * 0.01);
-  const startOffset = Number(
-    Math.min(Math.max(0, durationSeconds - 1.15), variantCycle * 0.05 + fractionalOffset).toFixed(2)
-  );
+const getVideoMediaAsset = (index: number, title: string, category: string) => {
+  const bundledAsset = bundledVideoSources[index];
+
+  if (bundledAsset) {
+    return {
+      source_url: bundledAsset.source_url,
+      thumbnail_url: bundledAsset.thumbnail_url,
+    };
+  }
 
   return {
-    source_url: `/videos/clips/evidence-${suffix}.mp4?entry=${pad(index + 1, 4)}#t=${startOffset}`,
+    source_url: "",
     thumbnail_url: buildVideoThumbnail(index, title, category),
   };
 };
@@ -260,25 +260,22 @@ const curatedVideoRecords: Omit<Video, "id" | "source_url" | "thumbnail_url">[] 
   { title: "Witness Interview — Haley Robson", description: "Recorded law enforcement interview during the Palm Beach County investigation.", duration: "05:15", release_date: "2023-12-05", category: "Interview", referenced_persons: ["10", "1"] },
 ];
 
-export const TOTAL_RELEASED_VIDEOS = 1826;
+export const TOTAL_RELEASED_VIDEOS = bundledVideoSources.length;
 
 const generatedVideoCategories = ["Surveillance", "Legal Proceeding", "Press Conference", "Evidence", "Interview"];
 const generatedVideoTitlePrefixes = [
-  "Archive Camera Segment",
-  "Court Submission Reel",
-  "Evidence Chain Clip",
-  "Witness Interview Segment",
-  "Property Surveillance Excerpt",
-  "Flight Terminal Recording",
-  "Case Briefing Capture",
-  "Deposition Extract",
+  "Bundled Evidence Clip",
+  "Archive Video Segment",
+  "Released Footage Excerpt",
+  "Case Media Segment",
+  "Evidence Reel",
 ];
 const generatedVideoDescriptionTemplates = [
-  "Released excerpt from public archive material, indexed and cross-referenced with document metadata.",
-  "Segment aligned with released filings and timeline events for investigative review.",
-  "Video excerpt preserved with source-chain metadata and indexed person references.",
-  "Cataloged visual material linked to corresponding records and archived references.",
-  "Reference clip attached to released evidence packet and person-index mappings.",
+  "Bundled public video file indexed in the local evidence library.",
+  "Local released clip mapped to the corresponding evidence shelf in this archive.",
+  "Bundled archive footage available in the current project asset set.",
+  "Indexed local video evidence with linked person references and thumbnail support.",
+  "Public-facing bundled clip included with the current archive build.",
 ];
 const generatedVideoDurations = ["04:58", "05:12", "05:39", "05:44", "06:03", "06:25", "06:42"];
 
@@ -286,10 +283,10 @@ const buildGeneratedVideo = (position: number): Video => {
   const index = curatedVideoRecords.length + position;
   const category = generatedVideoCategories[index % generatedVideoCategories.length];
   const titlePrefix = generatedVideoTitlePrefixes[index % generatedVideoTitlePrefixes.length];
-  const title = `${titlePrefix} — Archive Entry ${pad(index + 1, 4)}`;
+  const title = `${titlePrefix} ${pad(index + 1, 3)}`;
   const description = generatedVideoDescriptionTemplates[index % generatedVideoDescriptionTemplates.length];
   const duration = generatedVideoDurations[index % generatedVideoDurations.length];
-  const media = getVideoMediaAsset(index, title, category, duration);
+  const media = getVideoMediaAsset(index, title, category);
 
   const referenced = [
     pickReferencedPersonId(index, 5),
@@ -314,7 +311,7 @@ const buildGeneratedVideo = (position: number): Video => {
 };
 
 const curatedVideos: Video[] = curatedVideoRecords.map((record, index) => {
-  const media = getVideoMediaAsset(index, record.title, record.category, record.duration);
+  const media = getVideoMediaAsset(index, record.title, record.category);
   return {
     id: `v${index + 1}`,
     ...record,

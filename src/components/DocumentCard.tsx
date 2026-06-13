@@ -1,5 +1,7 @@
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FileText, ExternalLink, ShieldCheck } from "lucide-react";
+import { isInternalArchiveUrl } from "@/lib/archiveLinks";
 
 interface DocumentCardProps {
   title: string;
@@ -22,16 +24,22 @@ const typeColors: Record<string, string> = {
 };
 
 const DocumentCard = ({ title, dataset_number, release_date, document_type, summary, source_url, delay = 0, isVerified = true }: DocumentCardProps) => {
+  const navigate = useNavigate();
   const hasSource = Boolean(source_url) && source_url !== "#";
 
   const handleOpenSource = () => {
     if (!hasSource || !source_url) return;
 
+    if (isInternalArchiveUrl(source_url)) {
+      navigate(source_url);
+      return;
+    }
+
     const isExternal = /^https?:\/\//.test(source_url);
     if (isExternal) {
       window.open(source_url, "_blank", "noopener,noreferrer");
     } else {
-      window.open(source_url, "_self");
+      window.location.assign(source_url);
     }
   };
 

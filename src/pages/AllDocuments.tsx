@@ -5,6 +5,7 @@ import { ArrowLeft, Search, FileText, ChevronLeft, ChevronRight, ExternalLink } 
 import Navbar from "@/components/Navbar";
 import { documentTypes } from "@/data/mockData";
 import { queryDocuments, TOTAL_DOCUMENTS_INDEXED } from "@/data/allDocuments";
+import { isInternalArchiveUrl } from "@/lib/archiveLinks";
 
 const PAGE_SIZE = 60;
 
@@ -47,11 +48,16 @@ const AllDocuments = () => {
   const openSource = (sourceUrl: string) => {
     if (!sourceUrl || sourceUrl === "#") return;
 
+    if (isInternalArchiveUrl(sourceUrl)) {
+      navigate(sourceUrl);
+      return;
+    }
+
     const isExternal = /^https?:\/\//.test(sourceUrl);
     if (isExternal) {
       window.open(sourceUrl, "_blank", "noopener,noreferrer");
     } else {
-      window.open(sourceUrl, "_self");
+      window.location.assign(sourceUrl);
     }
   };
 
