@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+  <title id="title">DREADFLIX — streaming-style archive browser</title>
+  <desc id="desc">Animated night banner with a scrolling film strip of redacted document cards, a scanning magnifier and the DREADFLIX title in gold.</desc>
+  <defs>
+    <linearGradient id="night" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#020317"/>
+      <stop offset=".52" stop-color="#071238"/>
+      <stop offset="1" stop-color="#13052d"/>
+    </linearGradient>
+    <radialGradient id="purpleCloud">
+      <stop stop-color="#d43cff" stop-opacity=".66"/>
+      <stop offset=".34" stop-color="#8d22ff" stop-opacity=".3"/>
+      <stop offset="1" stop-color="#4215a7" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="redCloud">
+      <stop stop-color="#ff4a5c" stop-opacity=".5"/>
+      <stop offset=".35" stop-color="#c0162c" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#5a0614" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#a96b18"/>
+      <stop offset=".28" stop-color="#ffe293"/>
+      <stop offset=".55" stop-color="#f4bb4d"/>
+      <stop offset=".82" stop-color="#fff0b7"/>
+      <stop offset="1" stop-color="#b87519"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#ffffff" stop-opacity=".14"/>
+      <stop offset=".45" stop-color="#af75ff" stop-opacity=".07"/>
+      <stop offset="1" stop-color="#ff4a5c" stop-opacity=".05"/>
+    </linearGradient>
+    <linearGradient id="fade" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="#fff" stop-opacity="0"/>
+      <stop offset=".15" stop-color="#fff" stop-opacity="1"/>
+      <stop offset=".9" stop-color="#fff" stop-opacity="1"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <mask id="stripMask"><rect x="700" y="0" width="500" height="420" fill="url(#fade)"/></mask>
+    <pattern id="stars" width="150" height="110" patternUnits="userSpaceOnUse">
+      <circle cx="13" cy="18" r="1.2" fill="#fff7d4" opacity=".9"/>
+      <circle cx="61" cy="36" r=".7" fill="#d7b5ff" opacity=".76"/>
+      <circle cx="112" cy="17" r=".9" fill="#fff" opacity=".72"/>
+      <circle cx="140" cy="68" r="1.1" fill="#ffd972" opacity=".8"/>
+      <circle cx="83" cy="91" r=".55" fill="#fff" opacity=".58"/>
+      <circle cx="31" cy="100" r=".75" fill="#ff8a96" opacity=".7"/>
+    </pattern>
+    <!-- one document card -->
+    <g id="doc">
+      <rect width="96" height="128" rx="8" fill="#0b0f2e" stroke="#F4C65A" stroke-opacity=".55"/>
+      <rect x="10" y="12" width="52" height="6" rx="2" fill="#ffe7a2" opacity=".85"/>
+      <rect x="10" y="28" width="76" height="4" rx="2" fill="#d9c7f2" opacity=".45"/>
+      <rect x="10" y="38" width="64" height="4" rx="2" fill="#d9c7f2" opacity=".45"/>
+      <rect x="10" y="48" width="70" height="8" rx="1" fill="#000"/>
+      <rect x="10" y="62" width="58" height="4" rx="2" fill="#d9c7f2" opacity=".45"/>
+      <rect x="10" y="72" width="44" height="8" rx="1" fill="#000"/>
+      <rect x="10" y="86" width="72" height="4" rx="2" fill="#d9c7f2" opacity=".45"/>
+      <rect x="10" y="108" width="34" height="10" rx="3" fill="#c0162c" opacity=".85"/>
+    </g>
+    <g id="strip">
+      <use href="#doc" x="0"/>
+      <use href="#doc" x="116"/>
+      <use href="#doc" x="232"/>
+      <use href="#doc" x="348"/>
+      <use href="#doc" x="464"/>
+    </g>
+    <filter id="blur" x="-70%" y="-70%" width="240%" height="240%"><feGaussianBlur stdDeviation="42"/></filter>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dy="18" stdDeviation="20" flood-color="#000017" flood-opacity=".8"/></filter>
+    <clipPath id="clip"><rect width="1200" height="420" rx="34"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#clip)">
+    <rect width="1200" height="420" fill="url(#night)"/>
+    <ellipse cx="250" cy="120" rx="330" ry="210" fill="url(#purpleCloud)" filter="url(#blur)">
+      <animate attributeName="rx" values="300;370;300" dur="14s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values=".65;1;.65" dur="9s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="960" cy="240" rx="300" ry="200" fill="url(#redCloud)" filter="url(#blur)">
+      <animate attributeName="ry" values="170;230;170" dur="16s" repeatCount="indefinite"/>
+    </ellipse>
+    <rect x="-150" width="1500" height="520" fill="url(#stars)" opacity=".75">
+      <animateTransform attributeName="transform" type="translate" values="0 0;150 0" dur="46s" repeatCount="indefinite"/>
+    </rect>
+
+    <!-- scrolling shelves of document cards -->
+    <g mask="url(#stripMask)">
+      <g transform="translate(720 60)">
+        <g>
+          <animateTransform attributeName="transform" type="translate" values="0 0;-116 0" dur="7s" repeatCount="indefinite"/>
+          <use href="#strip"/>
+        </g>
+      </g>
+      <g transform="translate(662 232)" opacity=".8">
+        <g>
+          <animateTransform attributeName="transform" type="translate" values="-116 0;0 0" dur="9s" repeatCount="indefinite"/>
+          <use href="#strip"/>
+        </g>
+      </g>
+    </g>
+    <text x="732" y="48" fill="#ff8a96" font-family="'JetBrains Mono', Consolas, monospace" font-size="11" letter-spacing="3" opacity=".8">SHELF · DOCUMENTS</text>
+    <text x="732" y="222" fill="#ff8a96" font-family="'JetBrains Mono', Consolas, monospace" font-size="11" letter-spacing="3" opacity=".8">SHELF · FLIGHTS · VIDEOS</text>
+
+    <!-- scanning magnifier -->
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="820 150;1060 190;900 300;820 150" dur="14s" repeatCount="indefinite"/>
+      <circle r="46" fill="#ffffff" fill-opacity=".05" stroke="url(#gold)" stroke-width="5" filter="url(#glow)"/>
+      <circle r="38" fill="none" stroke="#ff4a5c" stroke-opacity=".5" stroke-dasharray="3 7"/>
+      <path d="M33 33L66 66" stroke="url(#gold)" stroke-width="10" stroke-linecap="round"/>
+    </g>
+
+    <!-- identity panel -->
+    <g filter="url(#shadow)">
+      <rect x="56" y="52" width="600" height="316" rx="28" fill="#060a25" fill-opacity=".72" stroke="url(#gold)" stroke-opacity=".82"/>
+      <rect x="68" y="64" width="576" height="292" rx="22" fill="url(#glass)" stroke="#d38cff" stroke-opacity=".26"/>
+    </g>
+    <path d="M96 100H300" stroke="url(#gold)" stroke-width="2"/>
+    <circle cx="96" cy="100" r="5" fill="#ff4a5c" filter="url(#glow)">
+      <animate attributeName="opacity" values=".3;1;.3" dur="1.6s" repeatCount="indefinite"/>
+    </circle>
+    <text x="114" y="106" fill="#f9d777" font-family="'JetBrains Mono', Consolas, monospace" font-size="13" letter-spacing="3">ARCHIVE UI / FRONTEND DEMO</text>
+    <text x="92" y="192" fill="url(#gold)" font-family="'Segoe UI', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="76" font-weight="800" letter-spacing="4">DREADFLIX</text>
+    <text x="96" y="236" fill="#fff9e8" font-family="'JetBrains Mono', Consolas, monospace" font-size="18" font-weight="700" letter-spacing="4">STREAMING-STYLE ARCHIVE BROWSER</text>
+    <text x="96" y="276" fill="#d9c7f2" font-family="'Segoe UI', 'Inter', 'Helvetica Neue', Arial, sans-serif" font-size="17">People, documents, flights and video — one click apart.</text>
+
+    <g transform="translate(96 302)">
+      <rect width="128" height="38" rx="19" fill="#2a0b18" fill-opacity=".8" stroke="#ff4a5c" stroke-opacity=".7"/>
+      <circle cx="20" cy="19" r="5" fill="#ff4a5c" filter="url(#glow)"><animate attributeName="opacity" values=".3;1;.3" dur="1.4s" repeatCount="indefinite"/></circle>
+      <text x="34" y="24" fill="#ffd3d8" font-family="'JetBrains Mono', Consolas, monospace" font-size="11" letter-spacing="1.2">REACT 18</text>
+    </g>
+    <g transform="translate(238 302)">
+      <rect width="150" height="38" rx="19" fill="#1d1732" fill-opacity=".78" stroke="#f3c454" stroke-opacity=".65"/>
+      <text x="20" y="24" fill="#ffe7a2" font-family="'JetBrains Mono', Consolas, monospace" font-size="11" letter-spacing="1.2">DEEP-LINKABLE</text>
+    </g>
+    <g transform="translate(402 302)">
+      <rect width="210" height="38" rx="19" fill="#111331" fill-opacity=".78" stroke="#9f62ff" stroke-opacity=".66"/>
+      <text x="20" y="24" fill="#dcc9ff" font-family="'JetBrains Mono', Consolas, monospace" font-size="11" letter-spacing="1.2">SYNTHETIC DATA LAYER</text>
+    </g>
+
+    <rect x="0" y="0" width="1200" height="420" rx="34" fill="none" stroke="url(#gold)" stroke-width="2"/>
+    <rect x="10" y="10" width="1180" height="400" rx="27" fill="none" stroke="#c44fff" stroke-opacity=".16"/>
+    <rect x="0" y="-45" width="1200" height="34" fill="#f7cf68" opacity=".045"><animate attributeName="y" values="-45;450" dur="8s" repeatCount="indefinite"/></rect>
+  </g>
+</svg>
